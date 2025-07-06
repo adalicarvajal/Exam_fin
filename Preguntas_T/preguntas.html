@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preguntas</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #34db55;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --dark-color: #34495e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 800px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 30px 0;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 10px;
+    }
+
+    .pregunta {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid var(--secondary-color);
+      transition: transform 0.3s ease;
+    }
+
+    .pregunta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .pregunta label {
+      display: block;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+
+    .opciones {
+      margin: 15px 0;
+    }
+
+    .opcion {
+      display: block;
+      margin: 10px 0;
+      padding: 10px 15px;
+      background-color: var(--light-color);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .opcion:hover {
+      background-color: #d6eaf8;
+    }
+
+    .opcion input {
+      margin-right: 10px;
+    }
+
+    .botones {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .verificar {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .verificar:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .reiniciar {
+      background-color: var(--accent-color);
+      color: white;
+      margin-top: 30px;
+    }
+
+    .reiniciar:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .feedback {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 5px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .correcto {
+      background-color: rgba(39, 174, 96, 0.1);
+      color: var(--success-color);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .incorrecto {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: var(--accent-color);
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .resultados {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: var(--light-color);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .progress-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background-color: var(--success-color);
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .volver-menu {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 25px;
+      background-color: var(--dark-color);
+      color: white;
+      border-radius: 5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .volver-menu:hover {
+      background-color: #2c3e50;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 95%;
+        padding: 15px;
+      }
+
+      .pregunta {
+        padding: 15px;
+      }
+
+      button {
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Preguntas</h1>
+    <form id="cuestionario"></form>
+
+    <button class="reiniciar" onclick="reiniciarCuestionario()">Reiniciar Cuestionario</button>
+
+    <div class="resultados" id="resultados">
+      <h2>Resultados</h2>
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <p id="puntuacion"></p>
+    </div>
+
+    <!-- Botón de volver al menú principal -->
+    <div class="botones">
+      <a href="../index.html" class="volver-menu">← Volver al Menú Principal</a>
+    </div>
+  </div>
+
+  <script>
+    const preguntas = [
+        ["Tomando como referencia el siguiente ejemplo: “Cuando una aplicación añade una caja de dialogo con un mensaje de «Confirmar envío de los datos» antes de que el usuario pase a la etapa siguiente.”, es un ejemplo de principio de usabilidad:", "Prevención de errores", ["Prevención de errores", "Reconocimiento en vez de recuerdo", "Diseño minimalista y estético", "Visibilidad del estado del sistema"]],
+        ["Una aplicación de software utiliza botones diseñados con iconos fácilmente reconocibles, es una característica de principio de usabilidad:", "Reconocimiento en vez de recuerdo", ["Prevención de errores", "Reconocimiento en vez de recuerdo", "Diseño minimalista y estético", "Visibilidad del estado del sistema"]],
+        ["El …………………………………………. contiene todo lo que hace referencia a la parte visual de una aplicación de software, es decir, la disposición de todos los elementos con los que el usuario va a interactuar cuando entre a la aplicación.", "diseño UI (User Interface)", ["diseño de navegación", "diseño UX (User eXperience)", "diseño UI (User Interface)", "diseño IxD (Interaction Design)"]],
+        ["Está fuertemente ligado al diseño UX, es el estudio de las interacciones que realiza el usuario con una aplicación de software y su dispositivo: uso de teclado, dispositivo táctil, tiempos invertidos en hacer clic, en ampliar una sección, etc.", "diseño IxD (Interaction Design)", ["diseño de navegación", "diseño UX (User eXperience)", "diseño UI (User Interface)", "diseño IxD (Interaction Design)"]],
+        ["Uno de los sistemas de evaluación de la usabilidad llamados de \"inspección\", se encuentra la evaluación……………… que consiste en que determinados evaluadores revisan la interfaz siguiendo unos principios de usabilidad reconocidos.", "Heurística", ["Cognitiva", "Observación de campo", "Heurística", "Focus group"]],
+        ["¿Cuáles de los siguientes son objetivos de la web relacionados con la usabilidad?", "Facilitar la navegación de los usuarios en la web", ["Conseguir que la información relevante esté colocada en la página principal", "Incrementar los ingresos del usuario", "Facilitar la navegación de los usuarios en la web", "Conseguir que los usuarios puedan comunicarse con el diseñador de la interfaz"]],
+        ["¿Cuál de los siguientes son métodos para analizar la usabilidad de una interfaz?", "La evaluación heurística a cargo de una persona con experiencia en usabilidad", ["La evaluación heurística a cargo de una persona con experiencia en usabilidad", "Un compilador específico para el ámbito visual", "Una encuesta entre la población antes de divulgar la página", "Pensando en voz baja"]],
+        ["Son reglas que sirven para limitar las acciones que el sistema o los usuarios deben realizar. Se les conoce como:", "Restricciones", ["Inferencias", "Hechos", "Validaciones", "Restricciones"]],
+        ["Con el fin de alcanzar la eficiencia en una aplicación web y la satisfacción del usuario se debe tomar en consideración para la evaluación los siguientes atributos:", "Seguridad, usabilidad, navegabilidad", ["Infraestructura, usabilidad", "Navegabilidad, infraestructura", "Seguridad, usabilidad, navegabilidad", "Usabilidad, diseño, tiempo"]],
+        ["¿Qué guía de estilo para la Web explica sobre la navegación con teclado y otras características de las interfaces de usuario a fin de que se beneficien a usuarios con discapacidades?", "W3C- “User Agent Accesibility Guidelines (UAAG).", ["W3C- “Web Content Accesibility Guidelines (WCAG)”.", "W3C- “Authoring Tool Accesibility Guidelines (ATAG)”.", "W3C- “User Agent Accesibility Guidelines (UAAG).", "W3C- “User Agent Accesibility Guidelines (UAAG)."]],
+        ["Un proceso de software es un conjunto de ____________ que conducen a la creación de un producto de software:", "Actividades", ["Personas", "Actividades", "Pruebas", "Componentes"]],
+        ["¿Cuál no es un elemento típico del proceso de software?:", "Estados", ["Estados", "Actividad", "Rol", "Producto"]],
+        ["Algunas actividades para los procesos de software son:", "Especificación, diseño, validación, evolución.", ["Especificación, diseño, validación, generación.", "Diseño, creación, validación, especificación.", "Especificación, diseño, validación, evolución.", "Diseño, ejecución, validación, especificación."]],
+        ["Se denomina modelo_____________ porque su característica principal es que no se comienza con un paso hasta que no se ha terminado el anterior.", "Cascada", ["Espiral", "Evolutivo", "Incremental", "Cascada"]],
+        ["¿Cuál no es considerado un modelo genérico?:", "Rup", ["Rup", "Cascada", "Evolutivo", "Prototipado"]],
+        ["El orden que debe seguir las etapas del proceso de software es:", "Requisitos, diseño, implementación, pruebas, mantenimiento.", ["Requisitos, diseño, implementación, pruebas, mantenimiento.", "Requisitos, implementación, diseño, mantenimiento, pruebas.", "Requisitos, diseño, implementación, mantenimiento, pruebas.", "Diseño, requisitos, implementación, pruebas, mantenimiento."]],
+        ["¿Cuál es el estándar que regula los modelos de evaluación del proceso del ciclo de vida del software?", "ISO/IEC 15504", ["IEE830", "ISO/IEC 15504", "ISO/IEC/IEEE 12507", "ISO/IEE 15244"]],
+        ["¿Cuál es considerada una metodología tradicional?", "CASCADA", ["XP", "SCRUM", "AUP", "CASCADA"]],
+        ["El equipo de un proyecto basado en metodología __________ es: cliente, programadores, testers, coach, manager.", "XP", ["AUP", "SCRUM", "XP", "KANBAN"]],
+        ["Es un Software que permite modelar y documentar procesos de negocio basado en el estándar conocido como Business Process Model and Notation (BPMN)", "Bizagi", ["Bizagi", "Rational Rose", "Microsoft Visio", "Start UML"]],
+        ["¿El modelo basado en componentes, con cuál modelo comparte características?", "Modelo espiral", ["Modelo en cascada", "Modelo de prototipos", "Modelo espiral", "Modelo incremental"]],
+        ["¿Cómo construye aplicaciones el modelo basado en componentes?", "A través de fragmentos de software prefabricados.", ["A través de fragmentos de software prefabricados.", "Creando código único para cada aplicación.", "Usando exclusivamente código fuente abierto.", "Desarrollando código sin modularización."]],
+        ["¿Qué característica del modelo basado en componentes reduce el ciclo de desarrollo?", "La reutilización de componentes preconstruidos", ["La inclusión de múltiples pruebas manuales", "La reutilización de componentes preconstruidos", "La dependencia de un solo equipo de desarrollo", "La eliminación de etapas iterativas"]],
+        ["¿Cuál de los siguientes procesos NO está incluido en los modelos de proceso de ISO/IEC 15504?", "Gestión de Recursos Humanos", ["Gestión de Proyectos", "Desarrollo de Software", "Gestión de Recursos Humanos", "Verificación y Validación"]],
+        ["¿Cuál es el nivel de capacidad que indica que un proceso se mejora continuamente a través de la innovación?", "Optimizado", ["Establecido", "Predecible", "Optimizado", "Realizado"]],
+        ["¿Qué significa el atributo rel=\"noopener\" en un enlace <a>?", "Impide que la nueva página pueda acceder a la página original", ["Abre el enlace en la misma ventana sin recargar la página", "Impide que la nueva página pueda acceder a la página original", "Establece un retardo en la apertura del enlace", "Permite que el enlace se abra en una ventana emergente"]],
+        ["¿Cuál es la función principal de la etiqueta <picture> en HTML5?", "Permitir la carga de imágenes en diferentes resoluciones o formatos según el tamaño de pantalla", ["Asegurar que las imágenes se carguen de forma asíncrona", "Permitir la carga de imágenes en diferentes resoluciones o formatos según el tamaño de pantalla", "Definir la imagen de fondo de una página", "Proteger el contenido visual de una página web"]],
+        ["¿Qué atributo en la etiqueta <audio> especifica el archivo de audio que se va a reproducir?", "src", ["src", "href", "media", "audio-file"]],
+        ["¿Cuál es la función del atributo async en la etiqueta <script>?", "Permitir que el script se ejecute de forma asíncrona con la carga de la página", ["Permitir que el script se ejecute de forma asíncrona con la carga de la página", "Asegurar que el script se ejecute en orden de aparición en el HTML", "Retrasar la carga del script hasta que toda la página se haya cargado", "Asegurar que el script no interfiera con otros scripts"]],
+        ["¿Qué es un \"data attribute\" en HTML?", "Un atributo utilizado para almacenar información personalizada que no afecta el contenido visual", ["Un atributo que contiene texto en negrita", "Un atributo utilizado para almacenar información personalizada que no afecta el contenido visual", "Un atributo obligatorio para formularios", "Un atributo que define la fuente de un archivo multimedia"]],
+        ["¿Cómo se activa un diseño de columnas múltiples en CSS?", "column-count", ["display: block", "display: inline", "column-count", "flex-direction: column"]],
+        ["¿Cuál es la diferencia entre position: absolute y position: fixed?", "absolute posiciona el elemento en relación con su contenedor y fixed lo posiciona respecto a la ventana del navegador", ["absolute posiciona el elemento en relación con su contenedor y fixed lo posiciona respecto a la ventana del navegador", "Ambos se comportan igual", "fixed posiciona el elemento dentro de su contenedor y absolute en relación con la ventana", "absolute fija el elemento en la parte inferior de la pantalla y fixed lo mueve al centro"]],
+        ["¿Qué es la propiedad box-sizing: border-box?", "Incluye el borde y el padding dentro de las dimensiones definidas del elemento", ["Define el tamaño total de un elemento sin contar su borde", "Modifica la forma en que se calculan los márgenes en un elemento", "Incluye el borde y el padding dentro de las dimensiones definidas del elemento", "Cambia el color del borde del elemento"]],
+        ["¿Qué hace el z-index en CSS?", "Controla el orden de apilamiento de los elementos en la página", ["Controla el orden de apilamiento de los elementos en la página", "Alinea los elementos verticalmente", "Establece el tamaño de los márgenes de los elementos", "Cambia el color de fondo de un elemento"]],
+        ["¿Cómo se puede hacer que un elemento responda a diferentes tamaños de pantalla utilizando CSS?", "Mediante media queries", ["Usando unidades absolutas como píxeles", "Usando propiedades como flexbox exclusivamente", "Mediante media queries", "Con la propiedad position: relative"]],
+        ["¿Cómo puedes evitar que un formulario se envíe por defecto en JavaScript?", "Usando event.preventDefault()", ["Usando event.preventDefault()", "Usando event.stopPropagation()", "Usando return true; en el manejador de eventos", "Usando return false; en el evento submit"]],
+        ["¿Qué es una \"Promise\" en JavaScript?", "Un objeto que representa la eventual terminación o fracaso de una operación asincrónica", ["Un tipo de objeto que almacena una función de devolución de llamada", "Una función que maneja múltiples respuestas de manera sincrónica", "Un objeto que representa la eventual terminación o fracaso de una operación asincrónica", "Un tipo de función que devuelve múltiples valores"]],
+        ["¿Qué hace el operador this en JavaScript?", "Hace referencia al contexto de ejecución actual", ["Representa el objeto global", "Hace referencia al contexto de ejecución actual", "Permite modificar los valores de todas las variables globales", "Hace referencia a un objeto específico de la clase"]],
+        ["¿Cómo puedes manejar errores en JavaScript de manera eficiente?", "Usando el bloque try...catch", ["Usando el bloque try...catch", "Usando thruw para lanzar errores manualmente", "Usando console.log() para imprimir los errores", "Usando register.log() para imprimir los errores"]],
+        ["¿Cómo puedes transformar una cadena de texto en un número en JavaScript?", "Todas las opciones son correctas", ["Usando Number()", "Usando parseInt() o parseFloat()", "Usando el operador + delante de la cadena", "Todas las opciones son correctas"]],
+        ["¿Cuál es una característica principal de las peticiones asíncronas (AJAX) en aplicaciones web?", "Permiten actualizar partes específicas de la página sin recargarla.", ["Permiten que la página se recargue cada vez que se actualiza el contenido.", "Permiten actualizar partes específicas de la página sin recargarla.", "Solo se pueden realizar en tiempo de ejecución.", "Solo funcionan con datos JSON."]],
+        ["¿Cuál de las siguientes opciones es un framework que permite el desarrollo en la nube para aplicaciones web en Python?", "Google AppEngine", ["Google AppEngine", "Ruby on Rails", "Jinja2", "Node.js"]],
+        ["En términos de Web Services, ¿Cuál es una diferencia clave entre SOAP y REST?", "SOAP utiliza XML, mientras que REST puede utilizar múltiples formatos como JSON y XML.", ["SOAP es solo compatible con JSON, mientras que REST no.", "REST es más complejo que SOAP.", "SOAP utiliza XML, mientras que REST puede utilizar múltiples formatos como JSON y XML.", "SOAP es compatible con Angular."]],
+        ["¿Qué tecnología se usa comúnmente junto con Angular para realizar almacenamiento en la nube?", "Cloud Endpoints", ["SOAP", "Cloud Endpoints", "PostgreSQL", "Jinja2"]],
+        ["¿Qué método HTTP se usa comúnmente para eliminar un recurso?", "DELETE", ["GET", "POST", "PUT", "DELETE"]],
+        ["¿Cuál de los siguientes es un servicio web que suele usarse en aplicaciones empresariales para intercambiar datos de manera segura y confiable?", "SOAP", ["REST", "SOAP", "JSON", "XML"]],
+        ["¿Qué tipo de tecnología permite que una aplicación web se comunique con un servidor sin recargar la página por completo?", "AJAX", ["HTML estático", "AJAX", "CSS", "SQL"]],
+        ["¿Qué función cumple el \"Web Server\" en una arquitectura de aplicaciones web?", "Envía respuestas en formato HTML, CSS y JavaScript al cliente.", ["Compila el código de la aplicación móvil.", "Proporciona y gestiona servicios web REST que se comunican con la base de datos.", "Envía respuestas en formato HTML, CSS y JavaScript al cliente.", "Se comunica directamente con el hardware del dispositivo móvil."]],
+        ["En una aplicación web que sigue el patrón MVC, ¿Cuál es la función principal del \"Controlador\"?", "Procesar las peticiones del usuario, coordinar la interacción entre Modelo y Vista, y devolver una respuesta.", ["Representar la interfaz de usuario y su diseño visual.", "Almacenar y gestionar la lógica de negocio y los datos de la aplicación.", "Procesar las peticiones del usuario, coordinar la interacción entre Modelo y Vista, y devolver una respuesta.", "Transformar el código en formato JSON para su visualización en la página."]],
+        ["En el patrón MVC, ¿Qué componente es responsable de interactuar directamente con la base de datos y manejar la lógica de negocio de la aplicación?", "Modelo", ["Modelo", "Vista", "Controlador", "Cliente"]],
+        ["¿Cuál de las siguientes prácticas ayuda a prevenir ataques de inyección SQL en aplicaciones web?", "Usar declaraciones preparadas o consultas parametrizadas.", ["Permitir que los usuarios ingresen consultas SQL en formularios.", "Escapar todos los caracteres especiales en las consultas SQL.", "Usar declaraciones preparadas o consultas parametrizadas.", "Ejecutar todas las consultas SQL desde el lado del cliente."]],
+        ["¿Qué es una práctica recomendada para proteger una API de ataques como el robo de datos o el acceso no autorizado?", "Utilizar tokens de autenticación, como JWT (JSON Web Tokens).", ["Permitir peticiones solo desde un navegador específico.", "No requerir autenticación para mejorar el rendimiento.", "Utilizar tokens de autenticación, como JWT (JSON Web Tokens).", "Limitar el acceso solo a usuarios de la red interna."]],
+        ["¿Cuál de las siguientes afirmaciones es cierta sobre las APIs REST?", "Son independientes del lenguaje de programación y del tipo de dispositivo.", ["Siempre devuelven datos en formato XML exclusivamente.", "No se pueden utilizar con protocolos seguros como HTTPS.", "Son independientes del lenguaje de programación y del tipo de dispositivo.", "Solo permiten operaciones de lectura de datos."]],
+        ["¿Cuál es la función principal de Postman en el desarrollo de APIs REST?", "Probar y enviar peticiones HTTP a la API para verificar su funcionamiento.", ["Diseñar la interfaz gráfica de la API.", "Probar y enviar peticiones HTTP a la API para verificar su funcionamiento.", "Optimizar el rendimiento de la API en el servidor.", "Generar automáticamente código para la API en varios lenguajes de programación."]],
+        ["¿Qué formato de datos es más común en las respuestas de una API REST y es soportado por Postman para visualizar la respuesta?", "JSON", ["XML", "YAML", "JSON", "CSV"]],
+        ["LA SIGUIENTE ACTIVIDAD “NO ESTÁ ABIERTO A COMPROMISOS CORRUPTO”, ¿A QUÉ CARACTERÍSTICA DEL INGENIERO DE SOFTWARE CORRESPONDE?", "HABILIDAD PARA CONVENCER", ["AUTOCONFIANZA", "NO DEBE SOBREESTIMAR SUS PROPIAS CAPACIDADES", "HABILIDAD PARA CONVENCER", "HABILIDAD PARA EMPATIZAR"]],
+        ["EL TIEMPO DURANTE EL CUAL EL SISTEMA ESTARÁ EN SERVICIO OFRECIENDO TODA SU FUNCIONALIDAD, ¿A QUÉ FACTOR DE CALIDAD EXTERNO CORRESPONDE?", "DISPONIBILIDAD", ["INTEGRIDAD", "PERFORMANCE", "USABILIDAD", "DISPONIBILIDAD"]],
+        ["EL SISTEMA BANCARIO SOLAMENTE PROVEERÁ DEL NOMBRE DE LOS CLIENTES, ES UN EJEMPLO DE REQUISITO NO FUNCIONAL DE:", "ORGANIZACIÓN", ["PRODUCTO", "ORGANIZACIÓN", "EXTERNO.", "SEGURIDAD"]],
+        ["¿PARA QUIENES SON LOS REQUISITOS?", "USUARIOS, DESARROLLADORES, INGENIERO DE REQUERIMIENTOS, STACKEHOLDERS, CLIENTES", ["USUARIOS, DESARROLLADORES, INGENIERO DE REQUERIMIENTOS, STACKEHOLDERS, CLIENTES", "USUARIOS, DESARROLLADORES, LÍDER DE PROYECTO, STACKEHOLDERS, CLIENTES", "INGENIERIOS MANTENEDORES DEL SISTEMA, DESARROLLADORES, INGENIERO DE REQUERIMIENTOS, STACKEHOLDERS, CLIENTES", "USUARIOS, DESARROLLADORES, INGENIERO DE REQUERIMIENTOS, STACKEHOLDERS, ADMINISTRADORES"]],
+        ["LA APLICACIÓN DEBE VISUALIZARSE Y FUNCIONAR CORRECTAMENTE EN LOS NAVEGADORES: EXPLORER, FIREBIRD, MOZILLA Y NAUTILUS, ES UN EJEMPLO DE REQUISITO NO FUNCIONAL DE:", "PRODUCTO", ["PRODUCTO", "ORGANIZACIÓN", "EXTERNO.", "SEGURIDAD"]],
+        ["CUANDO UN REQUERIMIENTO PROPORCIONA INFORMACIÓN SUFICIENTE PARA SU COMPRENSIÓN, ENTONCES ES:", "COMPLETO", ["CORRECTO", "CLARO", "COMPLETO", "CONSISTENTE"]],
+        ["¿CUÁL SERÍA EL ORDEN A SEGUIR PARA CAPTURAR LOS REQUERIMIENTOS?", "4,3,1,5,2", ["4,2,1,3,5", "4,3,1,5,2", "5,2,1,3,4", "3,4,1,5,2"]],
+        ["ES NECESARIO RESPONDER A LAS SIGUIENTES PREGUNTAS: ¿QUÉ SE QUIERE HACER?, ¿QUÉ PROBLEMA SE QUIERE RESOLVER? ¿PARA QUÉ SE QUIERE HACER EL SISTEMA? PARA:", "COMPRENDER EL PROBLEMA", ["DEFINIR LOS LÍMITES Y RESTRICCIONES DEL SISTEMA", "COMPRENDER EL PROBLEMA", "IDENTIFICAR A LOS USUARIOS INTERESADOS EN EL SISTEMA", "BUSCAR Y RECOLECTAR INFORMACIÓN"]],
+        ["DURANTE EL ANÁLISIS DE LOS REQUERIMIENTOS SE EXTRAEN:", "LAS CARACTERÍSTICAS OPERACIONALES DEL SOFTWARE, SE DETECTA SI HAY CONFLICTOS ENTRE LOS REQUERIMIENTOS Y SE RESUELVEN ESTOS CONFLICTOS, SE ESTABLECEN LAS RESTRICCIONES QUE DEBE CUMPLIR EL SOFTWARE Y SE CLASIFICAN LOS REQUERIMIENTOS.", ["LAS CARACTERÍSTICAS OPERACIONALES DEL SOFTWARE, SE DETECTA SI HAY CONFLICTOS ENTRE LOS REQUERIMIENTOS Y SE RESUELVEN ESTOS CONFLICTOS, SE ESTABLECEN LAS RESTRICCIONES QUE DEBE CUMPLIR EL SOFTWARE Y SE CLASIFICAN LOS REQUERIMIENTOS.", "LOS ELEMENTOS BÁSICOS DE UN SISTEMA TAL COMO LO PERCIBE EL USUARIO/CLIENTE.", "PAUTAS A SEGUIR POR LOS DESARROLLADORES DEL SISTEMA PREVIA A SU CLASIFICACIÓN", "DE FORMA COMPLETA, PRECISA Y VERIFICABLE, LOS REQUISITOS, EL DISEÑO Y EL COMPORTAMIENTO U OTRAS CARACTERÍSTICAS, DE UN SISTEMA O COMPONENTE DE UN SISTEMA."]],
+        ["LOS CLIENTES Y USUARIOS PUEDEN NO SER CONSCIENTES DE SUS NECESIDADES Y PUEDE QUE NO ENTIENDAN CÓMO LA TECNOLOGÍA PUEDE AYUDARLES, CORRESPONDE A UN PROBLEMA DE:", "DE ARTICULACIÓN", ["DE COMUNICACIÓN", "DE LIMITACIONES COGNITIVAS", "DE CONDUCTA HUMANA", "DE ARTICULACIÓN"]],
+        ["EL SIGUIENTE GRUPO DE PREGUNTAS: ¿Qué están haciendo?, ¿Qué objetivos tienen al hacerlo ?, ¿Por qué hago esa actividad?, ¿Por qué un proceso es complicado? PERMITE COMPRENDER LAS ACTIVIDADES DE:", "USUARIOS", ["ESPECIALISTAS", "USUARIOS", "PATROCINADORES EJECUTIVOS", "DIRECTIVOS"]],
+        ["¿CUÁLES SON LAS TÉCNICAS UTILIZADAS EN LA GESTIÓN DE REQUISITOS?", "APORTACIÓN DE REQUISITOS, PRIORIZACIÓN, TRAZABILIDAD, GESTIÓN DEL CAMBIO, VERSIONADO.", ["APORTACIÓN DE REQUISITOS, PRIORIZACIÓN, TRAZABILIDAD, GESTIÓN DEL CAMBIO, CREACIÓN DE DIFERENTES VISTAS.", "APORTACIÓN DE REQUISITOS, GENERACIÓN DE INFORMES, TRAZABILIDAD, GESTIÓN DEL CAMBIO, PRIORIZACIÓN.", "APORTACIÓN DE REQUISITOS, PRIORIZACIÓN, GENERACIÓN DE INFORMES, TRAZABILIDAD, GESTIÓN DEL CAMBIO.", "APORTACIÓN DE REQUISITOS, PRIORIZACIÓN, TRAZABILIDAD, GESTIÓN DEL CAMBIO, VERSIONADO."]],
+        ["CON LA SIGUIENTE PREGUNTA: ¿LO QUE PIDIÓ EL CLIENTE, FUNCIONA CORRECTAMENTE? LE PERMITE AL INGENIERIO DE REQUISITOS:", "LA VERIFICACIÓN DE LOS REQUERIMIENTOS", ["LA VERIFICACIÓN DE LOS REQUERIMIENTOS", "ASEGURAR UN CONOCIMIENTO EXPLÍCITO DEL DOMINIO DEL PROBLEMA", "CLASIFICAR LOS REQUISITOS PARA AYUDAR EN LAS LABORES DE NEGOCIACIÓN.", "GESTIONAR LOS CAMBIOS Y EL MANTENIMIENTO DE LOS REQUISITOS PARA QUE REPRESENTEN EL SISTEMA QUE SE VA A DESARROLLAR O QUE SE HA DESARROLLADO."]],
+        ["¿CUÁL DE LAS SIGUIENTES ACTIVIDADES NO SE INCLUYE EN LA FASE DE MANTENIMIENTO DE SOFTWARE?", "VALIDACIÓN DE REQUISITOS.", ["MEJORAS DE LAS CAPACIDADES.", "ELIMINACIÓN DE FUNCIONES OBSOLETAS.", "OPTIMIZACIÓN", "VALIDACIÓN DE REQUISITOS."]],
+        ["EN UN SISTEMA DE RESERVACIÓN DE VUELOS, ¿CUÁL DE LOS SIGUIENTES REQUERIMIENTOS ES FUNCIONAL?", "EL SISTEMA DEBERÁ PERMITIRLE AL USUARIO BUSCAR DISPONIBILIDAD DE ASIENTOS Y COSTO DE LOS VUELOS UTILIZANDO COMO CRITERIOS: FECHA Y TIPO DE VUELO.", ["EL SISTEMA DEBERÁ FUNCIONAR CORRECTAMENTE EN CUALQUIER NAVEGADOR.", "EL SISTEMA NO DEBERÁ TARDAR MÁS DE CINCO SEGUNDOS EN MOSTRAR LOS RESULTADOS DE UNA BÚSQUEDA.", "EL SISTEMA DEBERÁ PERMITIRLE AL USUARIO LA POSIBILIDAD DE BUSCAR DISPONIBILIDAD DE ASIENTOS Y COSTO DE LOS VUELOS.", "EL SISTEMA DEBERÁ PERMITIRLE AL USUARIO BUSCAR DISPONIBILIDAD DE ASIENTOS Y COSTO DE LOS VUELOS UTILIZANDO COMO CRITERIOS: FECHA Y TIPO DE VUELO."]],
+        ["¿Cuál de los siguientes diagramas UML se utiliza para representar la interacción entre objetos en un escenario específico?", "DIAGRAMA DE SECUENCIA", ["DIAGRAMA DE CLASES", "DIAGRAMA DE SECUENCIA", "DIAGRAMA DE CASOS DE USO", "DIAGRAMA DE COMPONENTES"]],
+        ["¿Qué principio SOLID promueve la idea de que una clase debe tener una sola responsabilidad?", "PRINCIPIO DE RESPONSABILIDAD ÚNICA", ["PRINCIPIO DE RESPONSABILIDAD ÚNICA", "PRINCIPIO ABIERTO/CERRADO", "PRINCIPIO DE SUSTITUCIÓN DE LISKOV", "PRINCIPIO DE INVERSIÓN DE DEPENDENCIAS"]],
+        ["¿Cuál de los siguientes patrones de diseño se utiliza para crear objetos sin exponer la lógica de instanciación?", "PATRÓN FACTORY", ["PATRÓN FACTORY", "PATRÓN SINGLETON", "PATRÓN ADAPTER", "PATRÓN DECORATOR"]],
+        ["¿Qué diagrama UML se utiliza para modelar la estructura estática de un sistema, mostrando las clases y sus relaciones?", "DIAGRAMA DE CLASES", ["DIAGRAMA DE SECUENCIA", "DIAGRAMA DE ACTIVIDADES", "DIAGRAMA DE CLASES", "DIAGRAMA DE DESPLIEGUE"]],
+        ["¿Qué tipo de relación en un diagrama de clases indica que una clase \"es un tipo de\" otra clase?", "HERENCIA", ["ASOCIACIÓN", "AGREGACIÓN", "COMPOSICIÓN", "HERENCIA"]],
+        ["¿Qué es un diagrama de flujo de datos (DFD)?", "UN DIAGRAMA QUE MUESTRA EL FLUJO DE DATOS A TRAVÉS DE UN SISTEMA", ["UN DIAGRAMA QUE MUESTRA LA SECUENCIA DE PASOS EN UN ALGORITMO", "UN DIAGRAMA QUE MUESTRA EL FLUJO DE DATOS A TRAVÉS DE UN SISTEMA", "UN DIAGRAMA QUE MUESTRA LAS RELACIONES ENTRE LAS ENTIDADES EN UNA BASE DE DATOS", "UN DIAGRAMA QUE MUESTRA LA ARQUITECTURA DE UN SISTEMA"]],
+        ["¿Cuál de los siguientes NO es un elemento de un DFD?", "CLASE", ["PROCESO", "FLUJO DE DATOS", "ALMACÉN DE DATOS", "CLASE"]],
+        ["¿Qué es un modelo entidad-relación (MER)?", "UN DIAGRAMA QUE MUESTRA LA ESTRUCTURA DE UNA BASE DE DATOS", ["UN DIAGRAMA QUE MUESTRA LA ESTRUCTURA DE UNA BASE DE DATOS", "UN DIAGRAMA QUE MUESTRA LAS INTERACCIONES ENTRE OBJETOS", "UN DIAGRAMA QUE MUESTRA EL FLUJO DE CONTROL EN UN PROGRAMA", "UN DIAGRAMA QUE MUESTRA LA ARQUITECTURA DE UN SISTEMA DISTRIBUIDO"]],
+        ["¿Qué símbolo se utiliza en un modelo entidad-relación (MER) para representar una entidad?", "RECTÁNGULO", ["RECTÁNGULO", "ROMBO", "ÓVALO", "CÍRCULO"]],
+        ["¿Qué tipo de relación en un modelo entidad-relación (MER) indica que una entidad no puede existir sin otra entidad?", "RELACIÓN DE DEPENDENCIA", ["RELACIÓN UNO A UNO", "RELACIÓN UNO A MUCHOS", "RELACIÓN MUCHOS A MUCHOS", "RELACIÓN DE DEPENDENCIA"]],
+        ["¿Qué principio SOLID establece que las entidades de software deben estar abiertas para la extensión, pero cerradas para la modificación?", "PRINCIPIO ABIERTO/CERRADO", ["PRINCIPIO ABIERTO/CERRADO", "PRINCIPIO DE SUSTITUCIÓN DE LISKOV", "PRINCIPIO DE SEGREGACIÓN DE INTERFACES", "PRINCIPIO DE INVERSIÓN DE DEPENDENCIAS"]],
+        ["¿Qué patrón de diseño define una familia de algoritmos, encapsula cada uno de ellos y los hace intercambiables?", "PATRÓN STRATEGY", ["PATRÓN STRATEGY", "PATRÓN OBSERVER", "PATRÓN TEMPLATE METHOD", "PATRÓN COMPOSITE"]],
+        ["¿Qué es la cohesión en el diseño de software?", "LA MEDIDA EN QUE UNA CLASE TIENE UNA SOLA RESPONSABILIDAD", ["LA MEDIDA EN QUE LOS MÓDULOS DE UN SISTEMA ESTÁN INTERCONECTADOS", "LA MEDIDA EN QUE UNA CLASE TIENE UNA SOLA RESPONSABILIDAD", "LA MEDIDA EN QUE UN SISTEMA ES FÁCIL DE MODIFICAR", "LA MEDIDA EN QUE UN SISTEMA ES FÁCIL DE ENTENDER"]],
+        ["¿Qué es el acoplamiento en el diseño de software?", "LA MEDIDA EN QUE LOS MÓDULOS DE UN SISTEMA DEPENDEN UNOS DE OTROS", ["LA MEDIDA EN QUE LOS MÓDULOS DE UN SISTEMA DEPENDEN UNOS DE OTROS", "LA MEDIDA EN QUE UNA CLASE TIENE UNA SOLA RESPONSABILIDAD", "LA MEDIDA EN QUE UN SISTEMA ES FÁCIL DE MODIFICAR", "LA MEDIDA EN QUE UN SISTEMA ES FÁCIL DE ENTENDER"]],
+        ["¿Qué principio SOLID establece que los clientes no deben verse obligados a depender de métodos que no utilizan?", "PRINCIPIO DE SEGREGACIÓN DE INTERFACES", ["PRINCIPIO DE RESPONSABILIDAD ÚNICA", "PRINCIPIO ABIERTO/CERRADO", "PRINCIPIO DE SUSTITUCIÓN DE LISKOV", "PRINCIPIO DE SEGREGACIÓN DE INTERFACES"]],
+        ["¿Cuál es el comando correcto para crear un nuevo proyecto en Flutter desde la línea de comandos?", "flutter create my_app", ["flutter init my_app", "flutter start my_app", "flutter create my_app", "flutter new my_app"]],
+        ["¿Cuál es el método principal del ciclo de vida de un StatefulWidget en Flutter que se llama cada vez que el estado del widget cambia?", "build()", ["initState()", "build()", "setState()", "dispose()"]],
+        ["¿Qué efecto tiene la llamada a runApp(MyApp()) dentro de la función main() en una aplicación Flutter?", "Establece MyApp como el widget raíz de la aplicación.", ["Establece MyApp como el widget raíz de la aplicación.", "Configura el entorno de ejecución de Flutter.", "Compila el widget MyApp en código nativo.", "Define las rutas de navegación de la aplicación."]],
+        ["En el siguiente fragmento de código: 'nombre_producto': _listaDatos[index]['nombre_producto'], ¿qué tipo de estructura es _listaDatos?", "Una lista de mapas, donde cada mapa contiene información sobre un producto.", ["Un Map que almacena información de producto.", "Una lista de mapas, donde cada mapa contiene información sobre un producto.", "Una instancia de una clase personalizada que maneja los datos de productos.", "Un widget que muestra detalles del producto."]],
+        ["¿Qué propiedad de ListView.builder especifica el número total de elementos en la lista?", "itemCount", ["itemBuilder", "itemCount", "scrollDirection", "padding"]],
+        ["¿Qué información se almacena en la variable respuesta después de ejecutar el siguiente código: final respuesta = await http.get(Uri.parse('http://192.168.100.17:8080/crud/insertar.php'));?", "Un objeto http.Response que contiene el código de estado y el cuerpo de la respuesta del servidor.", ["Un objeto http.Response que contiene el código de estado y el cuerpo de la respuesta del servidor.", "Una cadena de texto que representa la URL a la que se hizo la solicitud.", "Un objeto Uri que representa la URL de la solicitud.", "Un valor booleano que indica si la solicitud fue exitosa."]],
+        ["¿Cuál es la estructura para decodificar el cuerpo de la respuesta HTTP, que está en formato JSON, y convertirlo en una lista de objetos dinámicos?", "List<dynamic> data = jsonDecode(response.body);", ["List<dynamic> data = jsonEncode(response.body);", "List<dynamic> data = jsonDecode(response.body);", "List<dynamic> data = jsonString(response.body);", "List<dynamic> data = jsonCode(response.body);"]],
+        ["¿Cuál de las siguientes herramientas es una versión mejorada de Appium que ofrece una interfaz gráfica para simplificar la configuración y ejecución de pruebas?", "Appium Studio", ["Appium Studio", "Serenity", "TestNG", "Katalon Studio"]],
+        ["¿Qué widget en Flutter se utiliza para mostrar una lista desplazable de elementos?", "ListView", ["Column", "ListView", "Stack", "Container"]],
+        ["¿Cuál de los siguientes widgets es ideal para organizar otros widgets en un eje vertical?", "Column", ["Row", "Column", "Stack", "Expanded"]],
+        ["¿Qué propiedad se usa en Flutter para establecer el tamaño de un Container?", "width y height", ["alignment", "decoration", "width y height", "padding"]],
+        ["¿Qué función se utiliza para navegar entre pantallas en Flutter?", "Navigator.push", ["Navigator.pop", "Navigator.push", "Navigator.remove", "Navigator.popUntil"]],
+        ["¿Cuál de los siguientes widgets se usa para desplegar una cuadrícula de elementos en Flutter?", "GridView", ["ListView", "GridView", "Stack", "Row"]],
+        ["¿Qué widget en Flutter se utiliza para permitir el desplazamiento en ambas direcciones (horizontal y vertical)?", "CustomScrollView", ["SingleChildScrollView", "Scrollable", "ListView", "CustomScrollView"]],
+        ["¿Qué widget se utiliza para añadir margen y/o padding alrededor de un widget en Flutter?", "Container", ["Container", "Padding", "Margin", "Align"]],
+        ["¿Cuál es la primera fase del ciclo de vida de pruebas de software?", "Planificación de pruebas.", ["Planificación de pruebas.", "Diseño de pruebas.", "Ejecución de pruebas.", "Requerimientos de pruebas."]],
+        ["¿Cuál es el propósito principal de las pruebas de regresión en el desarrollo de software?", "Asegurar que los cambios recientes no han introducido nuevos errores en áreas no modificadas.", ["Identificar nuevas funcionalidades.", "Asegurar que los cambios recientes no han introducido nuevos errores en áreas no modificadas.", "Medir el rendimiento del sistema bajo condiciones de carga máxima.", "Evaluar la usabilidad del software."]],
+        ["¿Cuál es una característica clave de las pruebas de caja blanca?", "Utiliza técnicas como la cobertura de sentencias y la cobertura de decisiones.", ["No requiere conocimiento del código fuente.", "Utiliza técnicas como la cobertura de sentencias y la cobertura de decisiones.", "Se enfoca exclusivamente en la validación de la interfaz de usuario.", "Solo se realiza después de las pruebas de caja negra."]],
+        ["Seleccione la mejor definición de calidad de software", "Conformidad con los requerimientos.", ["Asegurar la inexistencia de ningún defecto.", "Calidad es trabajar uno solo.", "Conformidad con los requerimientos.", "Trabajar según la planificación."]],
+        ["¿Cuál es una de las principales ventajas de usar Mockito en pruebas unitarias?", "Mockito permite simular (mock) el comportamiento de objetos dependientes, lo que facilita la prueba de unidades de código de manera aislada y controlada.", ["Mockito permite ejecutar pruebas en paralelo, reduciendo el tiempo total de ejecución.", "Mockito proporciona una interfaz gráfica para la ejecución de pruebas.", "Mockito permite simular (mock) el comportamiento de objetos dependientes, lo que facilita la prueba de unidades de código de manera aislada y controlada.", "Mockito integra análisis de rendimiento dentro de las pruebas."]],
+        ["Analice las siguientes afirmaciones sobre el Modelo V en testing y seleccione la opción que las resuma correctamente", "El Modelo V en testing es un modelo flexible que puede adaptarse a las necesidades específicas de cada proyecto.", ["El Modelo V en testing es un modelo lineal que se sigue de forma estricta en todos los proyectos de software.", "El Modelo V en testing es un modelo flexible que puede adaptarse a las necesidades específicas de cada proyecto.", "El Modelo V en testing solo se aplica a pruebas de software funcionales, no a pruebas de no funcionales.", "El Modelo V en testing es un modelo obsoleto que ha sido reemplazado por metodologías más modernas."]],
+        ["¿Cuál de las siguientes opciones describe correctamente la relación entre error, defecto y fallo en el contexto de testing de software?", "Un error humano lleva a la introducción de un defecto en el software, que puede resultar en un fallo durante la ejecución.", ["Un fallo ocurre debido a un error humano que no provoca ningún defecto.", "Un defecto es una acción humana incorrecta que lleva a un error en el software.", "Un error humano lleva a la introducción de un defecto en el software, que puede resultar en un fallo durante la ejecución.", "Un defecto y un fallo son sinónimos y ambos ocurren debido a un error en el código."]],
+        ["¿La técnica de caja negra en pruebas de software consiste en?", "Ver el programa, despreocupándonos de comportamiento del código y centrando el esfuerzo en encontrar el comportamiento incorrecto, teniendo en cuenta las entradas y salidas del programa.", ["Ver el programa, despreocupándonos de comportamiento del código y centrando el esfuerzo en encontrar el comportamiento incorrecto, teniendo en cuenta las entradas y salidas del programa.", "Ver el programa, centrándonos en el comportamiento interno y concentrando el esfuerzo en el desarrollo del código y su correcto funcionamiento.", "Ver el programa, despreocupándonos de comportamiento del código y centrando el esfuerzo en encontrar el comportamiento incorrecto, teniendo en cuenta únicamente las entradas del programa.", "Ver el programa, preocupándonos del comportamiento de las interfaces de usuario y centrando el esfuerzo en encontrar el comportamiento incorrecto, teniendo en cuenta las entradas, salidas y riesgos del programa."]],
+        ["Asociado al uso y la implementación de una herramienta de pruebas de software. ¿Cuál de los siguientes normalmente es un riesgo?", "Subestimación de la cantidad de tiempo requerida para desarrollar los scripts de ejecución de pruebas.", ["Gestión de las expectativas del usuario.", "Subestimación de la cantidad de tiempo requerida para desarrollar los scripts de ejecución de pruebas.", "Control de versiones de los conjuntos de pruebas.", "Demasiada confianza en una herramienta automatizada para la ejecución de pruebas de regresión."]],
+        ["¿Cuál de las siguientes respuestas describe una condición de prueba?", "Un aspecto de la base de prueba que es relevante para lograr los objetivos específicos de la prueba.", ["Un atributo de un componente o sistema especificado o implícito en la documentación de requisitos.", "Un aspecto de la base de prueba que es relevante para lograr los objetivos específicos de la prueba.", "El grado en que un producto software proporciona funciones que satisfacen las necesidades explícitas e implícitas cuando el software se utiliza en condiciones específicas.", "El porcentaje de los resultados de todas las condiciones individuales que afectan de forma independiente al resultado de una decisión que ha sido practicada por un conjunto de casos de prueba."]],
+        ["¿Cuál es el objetivo principal de las pruebas de integración?", "Validar la correcta interacción entre diferentes módulos o componentes.", ["Evaluar la funcionalidad completa del sistema.", "Validar la correcta interacción entre diferentes módulos o componentes.", "Identificar problemas de rendimiento bajo carga.", "Verificar la usabilidad del software."]],
+        ["¿Qué principio sigue el Desarrollo Guiado por Pruebas (TDD)?", "Escribir una prueba antes de escribir el código que debe pasar la prueba.", ["Escribir todo el código de una vez y luego probarlo.", "Escribir pruebas después de desarrollar el código.", "Escribir una prueba antes de escribir el código que debe pasar la prueba.", "Probar manualmente cada componente después del desarrollo."]],
+        ["¿Cuál de las siguientes tareas es MÁS PROBABLE que sea realizada por el jefe de la prueba?", "Redactar informes resumen de prueba basados en la información recopilada durante la prueba.", ["Redactar informes resumen de prueba basados en la información recopilada durante la prueba.", "Revisar las pruebas desarrolladas por otros.", "Reducir el riesgo de defectos fundamentales del diseño.", "Analizar, revisar y evaluar los requisitos, especificaciones y modelos en lo que respecta a la capacidad de ser probado."]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor cómo se dividen las tareas entre el gestor de pruebas y el probador?", "El jefe de pruebas planifica, organiza y controla las actividades de prueba, mientras que el probador especifica y ejecuta las pruebas.", ["El jefe de pruebas planifica, organiza y controla las actividades de prueba, mientras que el probador especifica y ejecuta las pruebas.", "El jefe de pruebas planifica las actividades de prueba y elige los estándares a seguir, mientras que el probador elige las herramientas y controles a utilizar.", "El jefe de pruebas planifica, supervisa y controla las actividades de prueba, mientras que el probador diseña las pruebas y decide sobre la aprobación del objeto de prueba.", "El jefe de pruebas planifica y organiza las pruebas, y especifica los casos de prueba, mientras que el probador prioriza y ejecuta las pruebas."]],
+        ["¿Cuál de los siguientes tipos de revisión es la mejor opción para seleccionar con el objeto de llevar a cabo revisiones de componentes de seguridad crítica en un proyecto de software si, además, la revisión debe demostrarse como proceso formal basado en reglas y listas de comprobación?", "Inspección.", ["Inspección.", "Revisión Informal.", "Revisión Técnica.", "Revisión Guiada."]],
+        ["¿Qué es una aplicación distribuida?", "Un sistema de software donde sus componentes están en diferentes nodos.", ["Una aplicación monolítica que funciona en un solo servidor.", "Un sistema de software donde sus componentes están en diferentes nodos.", "Una base de datos centralizada conectada a múltiples usuarios.", "Un servidor local sin conexión a la red."]],
+        ["¿Qué desventaja tienen las aplicaciones distribuidas en comparación con sistemas monolíticos?", "Complejidad en la comunicación entre nodos.", ["Alta escalabilidad.", "Complejidad en la comunicación entre nodos.", "Mejor manejo de la concurrencia.", "Mayor disponibilidad de recursos."]],
+        ["¿Qué estilo arquitectónico es más común en las aplicaciones distribuidas modernas?", "Arquitectura orientada a servicios (SOA).", ["Arquitectura monolítica.", "Arquitectura orientada a servicios (SOA).", "Modelo cliente-servidor.", "Modelo relacional centralizado."]],
+        ["¿Qué componente facilita la comunicación entre aplicaciones distribuidas?", "Middleware.", ["Middleware.", "Base de datos SQL.", "Interfaz gráfica de usuario.", "Red local aislada."]],
+        ["¿Cuál de las siguientes tecnologías representa una arquitectura de microservicios?", "Una aplicación modular con servicios independientes y escalables.", ["Una aplicación de servidor centralizado con todas las funcionalidades.", "Una aplicación modular con servicios independientes y escalables.", "Un programa monolítico con acceso local a archivos.", "Una red local sin acceso a otros servicios."]],
+        ["¿Qué concepto describe la separación de funciones en aplicaciones distribuidas?", "Desacoplamiento.", ["Centralización.", "Desacoplamiento.", "Concurrencia.", "Unificación de procesos."]],
+        ["¿Qué técnica permite la comunicación remota entre procesos en sistemas distribuidos?", "Llamadas a procedimientos remotos (RPC).", ["Procesos síncronos.", "Llamadas a procedimientos remotos (RPC).", "Sincronización de memoria compartida.", "Interfaz gráfica local."]],
+        ["¿Cuál es una característica de la comunicación basada en mensajes?", "Facilita la comunicación asíncrona entre componentes.", ["Los procesos deben estar sincronizados.", "Facilita la comunicación asíncrona entre componentes.", "Requiere una única base de datos centralizada.", "No soporta alta concurrencia."]],
+        ["¿Qué elemento se encarga de facilitar la comunicación en tiempo real entre clientes y servidores?", "WebSockets.", ["Middleware.", "WebSockets.", "Protocolos de transferencia de archivos.", "Modelo monolítico."]],
+        ["¿Qué problema resuelven los algoritmos de sincronización en aplicaciones distribuidas?", "La sincronización de relojes entre nodos.", ["La falta de procesos independientes.", "La sincronización de relojes entre nodos.", "El acoplamiento fuerte entre componentes.", "La ejecución secuencial en sistemas monolíticos."]],
+        ["¿Qué describe mejor a los algoritmos de elección en sistemas distribuidos?", "Selección de un nodo para liderar una tarea específica.", ["Selección de un nodo para liderar una tarea específica.", "Implementación de conexiones permanentes con un servidor.", "Proceso centralizado de distribución de datos.", "Uso exclusivo de sincronización asíncrona."]],
+        ["¿Qué ventaja proporciona la sincronización adecuada en aplicaciones distribuidas?", "Facilita la consistencia en el orden de los eventos.", ["Garantiza un alto acoplamiento entre nodos.", "Facilita la consistencia en el orden de los eventos.", "Evita la ejecución de procesos paralelos.", "Centraliza toda la lógica del sistema."]],
+        ["¿Qué solución facilita la comunicación asíncrona en aplicaciones distribuidas?", "Cola de mensajes.", ["RPC con Thrift.", "Cola de mensajes.", "Base de datos local.", "Proceso monolítico."]],
+        ["¿Qué es la orquestación de contenedores en la nube?", "El despliegue automático y gestión de contenedores con herramientas como Kubernetes.", ["La administración manual de servidores virtuales.", "El despliegue automático y gestión de contenedores con herramientas como Kubernetes.", "La creación de un único servidor centralizado.", "La implementación de aplicaciones monolíticas."]],
+        ["¿Qué describe mejor el modelo de SaaS en la computación en la nube?", "Proporcionar software como un servicio accesible por internet.", ["Proporcionar software como un servicio accesible por internet.", "Ofrecer infraestructura virtualizada como servicio.", "Gestionar redes físicas para empresas locales.", "Proveer hardware como solución integrada."]],
+        ["¿Qué es requisito?", "Necesidad o expectativa establecida, generalmente implícita u obligatoria", ["Categoría o rango dado a diferentes requisitos", "Necesidad o expectativa establecida, generalmente implícita u obligatoria",  "Percepción del cliente sobre el grado en que se han cumplido los requisitos", "Documentos que proporcionan evidencia objetiva de las actividades o resultados obtenidos"]],
+        ["¿Cuál es la primera fase del ciclo de vida de desarrollo de software?", "Planificación", ["Diseño", "Planificación", "Análisis", "Implementación"]],
+        ["¿Qué se realiza en la fase de diseño en el ciclo de vida de desarrollo de software?", "Crear la arquitectura del software", ["Definir los requisitos", "Codificar el software", "Crear un plan de pruebas", "Crear la arquitectura del software"]],
+        ["¿Cuál es el objetivo principal de la fase de pruebas en el ciclo de vida de desarrollo de software?", "Verificar que el software cumpla con los requisitos", ["Generar los requisitos del sistema", "Verificar que el software cumpla con los requisitos", "Documentar el código", "Capacitar a los usuarios finales"]],
+        ["¿Qué describe el ciclo de vida de desarrollo de software?", "Las fases desde la concepción hasta el retiro del software", ["Las herramientas utilizadas en el desarrollo de software", "Las fases desde la concepción hasta el retiro del software", "La programación de aplicaciones móviles", "El análisis de la competencia en el mercado"]],
+        ["En Scrum, ¿qué rol se encarga de priorizar las tareas en el Product Backlog?", "Product Owner", ["Scrum Master", "Product Owner", "Development Team", "Stakeholder"]],
+        ["¿Cuál es la duración típica de un Sprint en Scrum?", "De dos a cuatro semanas", ["Un mes", "Una semana", "Tres meses", "De dos a cuatro semanas"]],
+        ["En Scrum, ¿qué documento describe las funcionalidades que debe tener el producto final?", "Product Backlog", ["Sprint Backlog", "Product Backlog", "Incremento", "Roadmap"]],
+        ["¿Qué realiza el Scrum Master en una sesión de Daily Scrum?", "Facilita la comunicación entre el equipo", ["Establece los objetivos del Sprint", "Facilita la comunicación entre el equipo", "Define las tareas a realizar", "Escribe los requisitos del producto"]],
+        ["¿Cuál es la responsabilidad principal del Development Team en Scrum?", "Desarrollar el software según lo estipulado en el Sprint Backlog", ["Gestionar el Product Backlog", "Tomar decisiones sobre la metodología de trabajo", "Desarrollar el software según lo estipulado en el Sprint Backlog", "Validar los productos entregados"]],
+        ["En Scrum, ¿qué es un Sprint Review?", "Una reunión donde se presentan los avances y el incremento del Sprint", ["Una reunión para planificar el próximo Sprint", "Una reunión donde se presentan los avances y el incremento del Sprint", "Una sesión de entrenamiento del equipo", "Una reunión de retroalimentación con los clientes"]],
+        ["¿Qué es el Product Backlog en Scrum?", "Un listado de las funcionalidades y características del producto", ["Un registro de las tareas diarias del equipo de desarrollo", "Un listado de las funcionalidades y características del producto", "Un resumen de las lecciones aprendidas en el proyecto", "Un informe de las pruebas realizadas en el producto"]],
+        ["¿Qué actividad se realiza en la fase de implementación del ciclo de vida de desarrollo de software?", "Escribir y probar el código fuente", ["Definir la arquitectura del sistema", "Escribir y probar el código fuente", "Crear el diseño de la interfaz de usuario", "Validar los requisitos con el cliente"]],
+        ["¿Qué sucede al final de un Sprint en Scrum?", "El equipo presenta el incremento del trabajo realizado", ["El equipo comienza un nuevo Sprint sin revisar el trabajo", "El equipo presenta el incremento del trabajo realizado", "El equipo realiza una reunión para establecer el próximo Sprint Backlog", "El cliente decide si el producto está listo para su lanzamiento"]],
+        ["¿Cuál es el propósito principal del ciclo de vida de desarrollo de software?", "Asegurar que el software cumpla con las expectativas y requisitos del cliente", ["Desarrollar software lo más rápido posible", "Asegurar que el software cumpla con las expectativas y requisitos del cliente", "Minimizar los costos de desarrollo", "Crear productos para competir en el mercado"]],
+        ["¿Qué debe hacer el Scrum Master si el equipo no cumple con los objetivos del Sprint?", "Facilitar la mejora continua del equipo y ayudar a resolver impedimentos", ["Asignar más recursos al equipo", "Sancionar al equipo por no cumplir con los objetivos", "Eliminar tareas del Sprint Backlog", "Facilitar la mejora continua del equipo y ayudar a resolver impedimentos"]],
+        ["¿Cómo define la globalización la Real Academia Española?", "La tendencia de mercados y empresas a extenderse mundialmente.", ["El desarrollo de software entre diferentes países.", "La tendencia de mercados y empresas a extenderse mundialmente.", "La coordinación y comunicación entre equipos de trabajo.", "La creación de software en una sola localización."]],
+        ["¿Qué nombre recibe el modelo de desarrollo de software donde todo el equipo está en un solo edificio?", "Desarrollo colocalizado.", ["Desarrollo distribuido.", "Desarrollo globalizado.", "Desarrollo colocalizado.", "Desarrollo deslocalizado."]],
+        ["¿Cuál es una de las bases fundamentales del Desarrollo Global del Software (DGS)?", "Interacción síncrona y asíncrona.", ["Equipos colocalizados.", "Interacción síncrona y asíncrona.", "Equipos centralizados en un solo país.", "Limitación de comunicación y coordinación."]],
+        ["¿Qué significa el concepto de inshoring?", "La compañía contratante y subcontratante se encuentran en el mismo país.", ["La compañía contratante y subcontratante se encuentran en diferente país.", "La compañía contratante y subcontratante se encuentran en el mismo país.", "Se refiere a comprar productos en el mismo país.", "Trabajo relocalizado es realizado por la misma organización."]],
+        ["¿Cuáles son los dos tipos de offshoring que se pueden dar?", "Captive Offshored y Offshore Outsourcing.", ["Captive Offshored y Offshore Outsourcing.", "Lineal Offshored y Offshore Outsourcing.", "Captive Offshored y Lineal Outsourcing.", "Explícita y semántica."]],
+        ["¿Qué objetivos se pretenden alcanzar cuando una empresa se embarca en un proyecto DGS?", "La proximidad al mercado y al cliente.", ["Buena infraestructura.", "La proximidad al cliente y empleados.", "Más dinero y posición en el mercado.", "La proximidad al mercado y al cliente."]],
+        ["¿Cuáles son los tres tipos de distribución de tareas o trabajo?", "Basado en módulo, basado en fases y follow the sun.", ["Basado en módulo, basado en fases y follow the moon.", "Basado en tareas, basado en actividades y follow the sun.", "Basado en módulo, basado en fases y follow the sun.", "Distribución lineal, compleja y mixta."]],
+        ["¿Cuál es uno de los beneficios principales del Desarrollo Global de Software (DGS)?", "Reducir los costos de traslado de profesionales al permitir trabajar con talento global.", ["Reducir los costos de traslado de profesionales al permitir trabajar con talento global.", "Eliminar por completo los gastos de coordinación e integración.", "Aumentar significativamente los salarios de los desarrolladores en países de bajos costos.", "Disminuir la calidad del software para reducir los costos de producción."]],
+        ["¿Cuáles son los principales desafíos del Desarrollo Global de Software (DGS)?", "Comunicación, Coordinación y Control.", ["Comunicación, Coordinación y Control.", "Calidad, Costos y Calendarios.", "Coordinación, Colaboración y Costos.", "Comunicación, Calidad y Clientes."]],
+        ["¿Cuál es uno de los problemas identificados en la aplicación del Desarrollo Global de Software (DGS)?", "La existencia de requisitos incompletos o pobremente especificados.", ["La falta de herramientas tecnológicas en el mercado.", "La ausencia total de métodos y procesos de desarrollo.", "La resistencia de los expertos a participar en encuestas.", "La existencia de requisitos incompletos o pobremente especificados."]],
+        ["¿Por qué las diferencias lingüísticas y culturales, así como la distancia geográfica, no son consideradas factores determinantes en el éxito de los proyectos DGS?", "Porque el uso de tecnología adecuada y la mejora en el proceso de software han reducido estas distancias.", ["Porque los ingenieros de software no consideran importantes las diferencias entre los equipos.", "Porque el uso de tecnología adecuada y la mejora en el proceso de software han reducido estas distancias.", "Porque estos factores solo afectan proyectos pequeños y no los grandes proyectos DGS.", "Porque la literatura especializada no reconoce estos factores como clave en DGS."]],
+        ["¿Cómo ayuda la experiencia con DGS con factores como lenguaje y distancia geográfica?", "La curva de aprendizaje incluye el uso de tecnología adecuada y mediante la mejora de procesos en entornos deslocalizados.", ["Proporciona soluciones definitivas para todos los problemas del DGS.", "Presentar únicamente las limitaciones del DGS en proyectos globales.", "La curva de aprendizaje incluye el uso de tecnología adecuada y mediante la mejora de procesos en entornos deslocalizados.", "Describir casos específicos de éxito en proyectos de DGS."]],
+        ["¿Qué aspecto requiere mayor investigación en el contexto del DGS?", "La validación empírica de cómo las metodologías ágiles benefician el DGS.", ["La validación empírica de cómo las metodologías ágiles benefician el DGS.", "La implementación de metodologías tradicionales en proyectos DGS.", "El impacto de los factores negativos en el desarrollo de software.", "La realización de experimentos con estudiantes sobre problemas de DGS."]],
+        ["¿Cuáles son las tres distancias que se mencionan como desafíos en DGS?", "Geográfica, temporal y sociocultural.", ["Física, tecnológica y económica.", "Geográfica, temporal y sociocultural.", "Geográfica, organizacional y cultural.", "Temporal, tecnológica y económica."]],
+        ["¿Cuál es el objetivo principal de la fase Release Planning en el desarrollo global de software?", "Planificar el lanzamiento del producto.", ["Ejecutar pruebas finales del producto.", "Planificar el lanzamiento del producto.", "Identificar problemas en la coordinación del equipo.", "Crear un modelo de casos de uso definitivo."]],
+        ["¿Cuál de las siguientes NO es una fase del ciclo de vida de un proyecto de software?", "REVISIÓN", ["PLANIFICACIÓN", "ANÁLISIS Y DISEÑO", "REVISIÓN", "CIERRE"]],
+        ["¿Qué metodología de desarrollo de software se caracteriza por ciclos iterativos cortos y entregas frecuentes?", "AGILE", ["CASCADA", "AGILE", "ESPIRAL", "PROTOTIPADO"]],
+        ["¿Cuál de las siguientes es una técnica de estimación de esfuerzo en proyectos de software?", "PUNTOS DE FUNCIÓN", ["DIAGRAMA DE GANTT", "PUNTOS DE FUNCIÓN", "DIAGRAMA DE PERT", "ANÁLISIS DE RIESGOS"]],
+        ["¿Qué documento define el alcance, objetivos y entregables de un proyecto de software?", "ESPECIFICACIÓN DE REQUISITOS", ["PLAN DE PRUEBAS", "ESPECIFICACIÓN DE REQUISITOS", "DIAGRAMA DE FLUJO DE DATOS", "MANUAL DE USUARIO"]],
+        ["¿Cuál de las siguientes herramientas se utiliza para la gestión de tareas y el seguimiento del progreso en un proyecto?", "HERRAMIENTA DE GESTIÓN DE PROYECTOS (EJ: JIRA, TRELLO)", ["COMPILADOR", "DEPURADOR", "GESTOR DE VERSIONES", "HERRAMIENTA DE GESTIÓN DE PROYECTOS (EJ: JIRA, TRELLO)"]],
+        ["¿Qué significa MVP en el desarrollo de software?", "MÍNIMO PRODUCTO VIABLE", ["MÍNIMO PRODUCTO VIABLE", "MODELO DE PROCESO DE VALIDACIÓN", "MÉTODO DE PLANIFICACIÓN DE VERSIONES", "MÁXIMA PRODUCTIVIDAD VIRTUAL"]],
+        ["¿Cuál de las siguientes es una buena práctica para la gestión de riesgos en un proyecto de software?", "IDENTIFICAR, ANALIZAR Y PLANIFICAR LA RESPUESTA A LOS RIESGOS", ["IGNORAR LOS RIESGOS POTENCIALES", "ASUMIR TODOS LOS RIESGOS", "IDENTIFICAR, ANALIZAR Y PLANIFICAR LA RESPUESTA A LOS RIESGOS", "DEJAR LA GESTIÓN DE RIESGOS PARA EL FINAL DEL PROYECTO"]],
+        ["¿Qué es la gestión de la configuración en un proyecto de software?", "EL CONTROL DE CAMBIOS Y VERSIONES DEL SOFTWARE Y LA DOCUMENTACIÓN", ["LA ADMINISTRACIÓN DEL HARDWARE UTILIZADO EN EL DESARROLLO", "EL CONTROL DE CAMBIOS Y VERSIONES DEL SOFTWARE Y LA DOCUMENTACIÓN", "LA CONFIGURACIÓN DE LAS HERRAMIENTAS DE DESARROLLO", "LA GESTIÓN DE LA INFRAESTRUCTURA DE RED"]],
+        ["¿Qué es una 'estimación ágil' en el contexto de un proyecto de software?", "UNA ESTIMACIÓN RÁPIDA Y APROXIMADA BASADA EN LA EXPERIENCIA Y LA INTUICIÓN", ["UNA ESTIMACIÓN RÁPIDA Y APROXIMADA BASADA EN LA EXPERIENCIA Y LA INTUICIÓN", "UNA ESTIMACIÓN DETALLADA Y PRECISA REALIZADA AL INICIO DEL PROYECTO", "UNA ESTIMACIÓN QUE NO SE PUEDE MODIFICAR DURANTE EL PROYECTO", "UNA ESTIMACIÓN QUE SOLO CONSIDERA EL ESFUERZO DE DESARROLLO"]],
+        ["¿Cuál es el objetivo principal de una reunión de 'daily scrum' en un proyecto Agile?", "SINCRONIZAR EL TRABAJO DEL EQUIPO Y REPORTAR EL PROGRESO", ["PRESENTAR EL PRODUCTO FINAL AL CLIENTE", "REALIZAR LA PLANIFICACIÓN DEL SPRINT", "SINCRONIZAR EL TRABAJO DEL EQUIPO Y REPORTAR EL PROGRESO", "RESOLVER PROBLEMAS TÉCNICOS COMPLEJOS"]],
+        ["¿Qué es un 'sprint backlog' en Scrum?", "UN CONJUNTO DE HISTORIAS DE USUARIO SELECCIONADAS PARA UN SPRINT", ["UNA LISTA DE TODAS LAS TAREAS PENDIENTES DEL PROYECTO", "UN DOCUMENTO QUE DESCRIBE LA ARQUITECTURA DEL SOFTWARE", "UN CONJUNTO DE HISTORIAS DE USUARIO SELECCIONADAS PARA UN SPRINT", "UN INFORME DE LOS DEFECTOS ENCONTRADOS EN EL SOFTWARE"]],
+        ["¿Cuál de las siguientes NO es una característica de un equipo Agile eficaz?", "JERARQUÍA RÍGIDA Y CONTROL CENTRALIZADO", ["COMUNICACIÓN ABIERTA Y COLABORACIÓN", "AUTONOMÍA Y AUTO-ORGANIZACIÓN", "JERARQUÍA RÍGIDA Y CONTROL CENTRALIZADO", "ORIENTACIÓN A LA ENTREGA DE VALOR"]],
+        ["¿Qué es la 'velocidad' en un equipo Scrum?", "LA CANTIDAD DE TRABAJO QUE UN EQUIPO PUEDE COMPLETAR EN UN SPRINT", ["LA CANTIDAD DE TRABAJO QUE UN EQUIPO PUEDE COMPLETAR EN UN SPRINT", "LA RAPIDEZ CON LA QUE SE ESCRIBE EL CÓDIGO", "EL TIEMPO QUE TARDA UN DESARROLLADOR EN COMPLETAR UNA TAREA", "LA CANTIDAD DE DEFECTOS ENCONTRADOS EN EL SOFTWARE"]],
+        ["¿Cuál es la diferencia entre un error y un defecto en el software?", "UN ERROR ES UN PROBLEMA EN EL CÓDIGO, UN DEFECTO ES EL RESULTADO DEL ERROR", ["UN ERROR ES UN PROBLEMA EN EL CÓDIGO, UN DEFECTO ES EL RESULTADO DEL ERROR", "UN ERROR ES REPORTADO POR EL USUARIO, UN DEFECTO ES ENCONTRADO POR EL DESARROLLADOR", "NO HAY DIFERENCIA, SON SINÓNIMOS", "UN ERROR ES MÁS GRAVE QUE UN DEFECTO"]],
+        ["¿Cuál de los siguientes es un dominio de desempeño de proyectos según la séptima edición del PMBOK?", "GESTIÓN DE LA CALIDAD", ["GESTIÓN DE LA CALIDAD", "GESTIÓN DE LOS RECURSOS HUMANOS", "GESTIÓN DE LAS COMUNICACIONES", "GESTIÓN DEL ALCANCE"]]
+
+
+        
+    ];
+
+    let respuestasCorrectas = 0;
+    const form = document.getElementById("cuestionario");
+
+    function renderizarCuestionario() {
+      respuestasCorrectas = 0;
+      form.innerHTML = '';
+
+      preguntas.forEach(([pregunta, respuestaCorrecta, opciones], i) => {
+        const preguntaElement = document.createElement('div');
+        preguntaElement.className = 'pregunta';
+        preguntaElement.innerHTML = `
+          <label>${i + 1}. ${pregunta}</label>
+          <div class="opciones">
+            ${opciones.map((opcion, j) => `
+              <label class="opcion">
+                <input type="radio" name="respuesta${i}" value="${opcion}">
+                ${opcion}
+              </label>
+            `).join('')}
+          </div>
+          <div class="botones">
+            <button type="button" class="verificar" onclick="verificarRespuesta(${i}, '${escapeHtml(respuestaCorrecta)}')">
+              Verificar
+            </button>
+          </div>
+          <div class="feedback" id="feedback${i}"></div>
+        `;
+        form.appendChild(preguntaElement);
+      });
+
+      document.getElementById('resultados').style.display = 'none';
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function verificarRespuesta(index, respuestaCorrecta) {
+      const opciones = document.getElementsByName(`respuesta${index}`);
+      let seleccion = "";
+      opciones.forEach((opcion) => {
+        if (opcion.checked) seleccion = opcion.value;
+      });
+
+      const feedback = document.getElementById(`feedback${index}`);
+      if (seleccion === respuestaCorrecta) {
+        feedback.innerHTML = "✓ <span class='correcto'>¡Correcto! Buen trabajo.</span>";
+        feedback.style.display = 'block';
+        respuestasCorrectas++;
+      } else if (seleccion === "") {
+        feedback.innerHTML = "⚠ <span class='incorrecto'>Por favor selecciona una respuesta.</span>";
+        feedback.style.display = 'block';
+        return;
+      } else {
+        feedback.innerHTML = `✗ <span class='incorrecto'>Incorrecto. La respuesta correcta es: ${respuestaCorrecta}</span>`;
+        feedback.style.display = 'block';
+      }
+
+      verificarCompletado();
+    }
+
+    function verificarCompletado() {
+      let todasRespondidas = true;
+      preguntas.forEach((_, i) => {
+        const opciones = document.getElementsByName(`respuesta${i}`);
+        let seleccionada = false;
+        opciones.forEach(opcion => {
+          if (opcion.checked) seleccionada = true;
+        });
+        if (!seleccionada) todasRespondidas = false;
+      });
+
+      if (todasRespondidas) {
+        mostrarResultados();
+      }
+    }
+
+    function mostrarResultados() {
+      const resultados = document.getElementById('resultados');
+      const puntuacion = document.getElementById('puntuacion');
+      const progressBar = document.getElementById('progress-bar');
+
+      const porcentaje = Math.round((respuestasCorrectas / preguntas.length) * 100);
+
+      puntuacion.textContent = `Has acertado ${respuestasCorrectas} de ${preguntas.length} preguntas (${porcentaje}%)`;
+      progressBar.style.width = `${porcentaje}%`;
+
+      if (porcentaje >= 80) {
+        progressBar.style.backgroundColor = '#27ae60';
+      } else if (porcentaje >= 50) {
+        progressBar.style.backgroundColor = '#f39c12';
+      } else {
+        progressBar.style.backgroundColor = '#e74c3c';
+      }
+
+      resultados.style.display = 'block';
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+
+    function reiniciarCuestionario() {
+      renderizarCuestionario();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    renderizarCuestionario();
+  </script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Programación</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #34db55;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --dark-color: #34495e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 800px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 30px 0;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 10px;
+    }
+
+    .pregunta {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid var(--secondary-color);
+      transition: transform 0.3s ease;
+    }
+
+    .pregunta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .pregunta label {
+      display: block;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+
+    .opciones {
+      margin: 15px 0;
+    }
+
+    .opcion {
+      display: block;
+      margin: 10px 0;
+      padding: 10px 15px;
+      background-color: var(--light-color);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .opcion:hover {
+      background-color: #d6eaf8;
+    }
+
+    .opcion input {
+      margin-right: 10px;
+    }
+
+    .botones {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .verificar {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .verificar:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .reiniciar {
+      background-color: var(--accent-color);
+      color: white;
+      margin-top: 30px;
+    }
+
+    .reiniciar:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .feedback {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 5px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .correcto {
+      background-color: rgba(39, 174, 96, 0.1);
+      color: var(--success-color);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .incorrecto {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: var(--accent-color);
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .resultados {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: var(--light-color);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .progress-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background-color: var(--success-color);
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .volver-menu {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 25px;
+      background-color: var(--dark-color);
+      color: white;
+      border-radius: 5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .volver-menu:hover {
+      background-color: #2c3e50;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 95%;
+        padding: 15px;
+      }
+
+      .pregunta {
+        padding: 15px;
+      }
+
+      button {
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Programación</h1>
+    <form id="cuestionario"></form>
+
+    <button class="reiniciar" onclick="reiniciarCuestionario()">Reiniciar Cuestionario</button>
+
+    <div class="resultados" id="resultados">
+      <h2>Resultados</h2>
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <p id="puntuacion"></p>
+    </div>
+
+    <!-- Botón de volver al menú principal -->
+    <div class="botones">
+      <a href="../index.html" class="volver-menu">← Volver al Menú Principal</a>
+    </div>
+  </div>
+
+  <script>
+    const preguntas = [
+        ["¿Qué se debe hacer antes de salir de una región crítica?", "Liberar el semáforo", ["Cambiar la condición", "Dormir el hilo", "Liberar el semáforo", "Incrementar el hilo"]],
+        ["¿Cuál es el problema que se busca evitar usando semáforos?", "Condiciones de carrera", ["Fragmentación externa", "Interrupciones del sistema", "Condiciones de carrera", "Memoria insuficiente"]],
+        ["Una región crítica condicional", "Se ejecuta solo si se cumple una condición", ["No permite interrupciones", "Usa un ciclo infinito", "Se ejecuta solo si se cumple una condición", "Siempre se ejecuta"]],
+        ["¿Cuál de las siguientes afirmaciones es verdadera respecto a la arquitectura MISD?", "Es menos común que las arquitecturas SIMD y MIMD.", ["Es menos común que las arquitecturas SIMD y MIMD.", "Ofrece el mejor rendimiento para aplicaciones de gráficos.", "No requiere sincronización de procesadores.", "Es ampliamente utilizada en computadoras domésticas."]],
+        ["¿En qué tipo de aplicación es más ventajosa la arquitectura MIMD?", "Simulaciones que requieren diferentes cálculos en diferentes partes del modelo.", ["Operaciones de punto flotante intensivas en un solo conjunto de datos.", "Procesamiento de gráficos en tiempo real.", "Simulaciones que requieren diferentes cálculos en diferentes partes del modelo.", "Procesamiento de grandes volúmenes de datos idénticos."]],
+        ["En el lenguaje de programación Java ¿Qué método hace que se inicie el proceso run() de una clase que hereda de la clase Thread?", "start()", ["run()", "Ini()", "join()", "start()"]],
+        ["¿Qué tipo de sistemas es más adecuado para la programación con OpenMP?", "Sistemas de memoria compartida", ["Sistemas distribuidos", "Sistemas con redes de alta velocidad", "Sistemas de memoria compartida", "Sistemas basados en GPU"]],
+        ["¿Cuál es el propósito principal de MPI (Message Passing Interface)?", "Comunicación entre procesos en sistemas distribuidos", ["Comunicación entre procesos en sistemas distribuidos", "Generación de directivas de compilador para la paralelización", "Paralelización de bucles en sistemas multiprocesador", "Creación y administración de hilos en sistemas de memoria compartida"]],
+        ["¿Cuál de estas NO es una métrica para evaluar algoritmos paralelos?", "Concurrencia", ["Eficiencia", "Concurrencia", "Speedup", "Latencia"]],
+        ["¿Qué problema busca resolver el balanceo de carga estático?", "El desequilibrio en la distribución de trabajo entre procesadores.", ["El desequilibrio en la distribución de trabajo entre procesadores.", "La falta de recursos de hardware en el sistema.", "La sobrecarga de comunicación entre procesadores.", "La variabilidad en los tiempos de ejecución de tareas."]],
+        ["¿Cuál es el objetivo principal del balanceo de carga dinámica?", "Mantener una carga equilibrada entre procesadores en tiempo de ejecución.", ["Mantener una carga equilibrada entre procesadores en tiempo de ejecución.", "Desactivar procesadores para reducir el consumo de energía.", "Distribuir tareas estéticamente antes de la ejecución.", "Maximizar la carga de trabajo en cada procesador."]],
+        ["¿Qué se monitorea en el balanceo de carga dinámico?", "La carga de trabajo de cada procesador.", ["La carga de trabajo en un solo procesador.", "La carga de trabajo de cada procesador.", "El estado de ejecución de los procesadores.", "El tiempo de ejecución de una única tarea."]],
+        ["¿Cuál es el propósito principal de un balanceador de carga en una arquitectura web?", "Distribuir el tráfico de red entre múltiples servidores web para optimizar el rendimiento.", ["Distribuir el tráfico de red entre múltiples servidores web para optimizar el rendimiento.", "Proteger el servidor de ataques DDoS.", "Realizar copias de seguridad automáticas.", "Almacenar datos de los usuarios."]],
+        ["¿Qué problema puede surgir en un esquema de balanceo centralizado con un nodo maestro?", "Cuello de botella en el nodo maestro cuando hay demasiadas solicitudes.", ["Falta de comunicación entre los nodos trabajadores.", "Cuello de botella en el nodo maestro cuando hay demasiadas solicitudes.", "Incapacidad del nodo maestro para ejecutar tareas asignadas.", "Excesiva latencia en la ejecución de las tareas debido a la descentralización."]],
+        ["¿Qué técnica se usa comúnmente en el balanceo de carga predictivo?", "Análisis de datos históricos y aprendizaje automático.", ["Análisis de datos históricos y aprendizaje automático.", "Asignación aleatoria de tareas sin considerar cargas previas.", "Robado de trabajo entre procesadores.", "Distribución equitativa de trabajo en tiempo de ejecución."]],
+        ["¿Qué caracteriza a un motor gráfico de bajo nivel?", "Permiten acceso directo al hardware, brindan máxima flexibilidad, pero requieren mayor dificultad de programación.", ["Son motores como Unity o Unreal.", "Funcionan únicamente con lenguajes de programación orientados a objetos.", "Ofrecen herramientas visuales avanzadas como motores de físicas integradas.", "Permiten acceso directo al hardware, brindan máxima flexibilidad, pero requieren mayor dificultad de programación."]],
+        ["¿Por qué la computación gráfica exige gran capacidad de procesamiento?", "Porque implica algoritmos con muchos cálculos matemáticos, como rasterización y sombreado.", ["Porque controla dispositivos de red.", "Porque implica algoritmos con muchos cálculos matemáticos, como rasterización y sombreado.", "Porque almacena texto en bases de datos.", "Porque solo se encarga de los colores de fondo."]],
+        ["Si tienes dos vectores A = (3, 4, 0) y B = (1, -2, 0), ¿cuál es el vector suma A + B?", "(4, 2, 0)", ["(2, 2, 0)", "(4, 6, 0)", "(4, 2, 0)", "(3, 2, 0)"]],
+        ["¿Cuál es la magnitud del vector V = (6, 8, 0)?", "10", ["48", "14", "10", "100"]],
+        ["Si un vector N = (0, 0, 1) es la normal de una superficie, y la luz direccional incide con el vector L = (0, 0, -1), ¿cuál es el valor del producto punto N · L?", "-1", ["0.5", "-1", "1", "0"]],
+        ["Dado el vector V = (2, -2, 1), ¿cuál es el resultado de reflejarlo respecto al plano XY?", "(2, -2, -1)", ["(-2, 2, 1)", "(2, 2, 1)", "(2, -2, -1)", "(2, -2, 1)"]],
+        ["Si un triángulo tiene vértices en A(0, 0), B(4, 0) y C(4, 3), ¿cuál es su área?", "6", ["6", "8", "10", "12"]],
+        ["¿Cuál es el número mínimo de triángulos en que puede dividirse un polígono simple de n lados mediante triangulación?", "n – 2", ["n – 1", "n – 2", "n", "n – 3"]],
+        ["¿Qué técnica es común para la triangulación de polígonos en computación gráfica?", "Algoritmo de las orejas (Ear Clipping).", ["Transformada de Fourier.", "Regla del cordón (Shoelace).", "Algoritmo de las orejas (Ear Clipping).", "Método de Bresenham."]],
+        ["¿Cuál de las siguientes matrices corresponde a una rotación de 90° antihoraria en 2D?", "(0, -1; 1, 0)", ["(-1, 0; 0, -1)", "(0, 0; 1, 0)", "(0, 1; -1, 0)", "(0, -1; 1, 0)"]],
+        ["En computación gráfica, ¿qué efecto produce aplicar una escala con un factor menor que 1?", "Reduce el tamaño del objeto.", ["Lo rota 180°.", "Reduce el tamaño del objeto.", "Agranda el objeto.", "Cambia el color del objeto."]],
+        ["Si escalamos un objeto en 3D solo en el eje Z, ¿cómo es la matriz de escalado?", "(1, 0, 0; 0, 1, 0; 0, 0, s)", ["(1, 0, 0; 0, 1, 0; 0, 0, s)", "(s, 0, s; 0, s, s; s, s, s)", "(1, s, 0; s, 1, 0; 0, 0, 1)", "(s, 0, 0; 0, s, 0; 0, 0, 1)"]],
+        ["Si se dibuja una línea con pendiente m < 1, ¿cómo avanza el algoritmo de Bresenham?", "Incrementa solo la coordenada X en cada paso.", ["Incrementa solo la coordenada Y en cada paso.", "Salta directamente al punto final.", "Incrementa solo la coordenada X en cada paso.", "No puede dibujar líneas con pendiente menor a 1."]],
+        ["Si el código de región de dos puntos finales de una línea tiene bits comunes en 1 (AND lógico ≠ 0), ¿qué indica el algoritmo de Cohen–Sutherland?", "La línea está completamente fuera y puede descartarse.", ["La línea está completamente dentro de la ventana.", "La línea está completamente fuera y puede descartarse.", "La línea debe dibujarse en otro color.", "La línea es visible pero parcialmente recortada."]],
+        ["¿Qué sucede con los vértices de un polígono que están completamente dentro de la ventana de recorte en el algoritmo de Sutherland–Hodgman?", "Se mantienen en la lista resultante sin cambios.", ["Se transforman en líneas rectas.", "Se mantienen en la lista resultante sin cambios.", "Se duplican en la lista de vértices.", "Son eliminados."]],
+        ["En el algoritmo de Sutherland–Hodgman, cuando una arista del polígono cruza el borde de la ventana de recorte, ¿qué se calcula?", "El punto de intersección entre la arista y el borde.", ["El área total del polígono original.", "El ángulo de reflexión.", "El punto de intersección entre la arista y el borde.", "La longitud de los lados restantes."]],
+        ["¿Qué efecto visual consigue la perspectiva en computación gráfica?", "Que los objetos lejanos se vean más pequeños y converjan hacia un punto de fuga.", ["Que los objetos lejanos se vean más pequeños y converjan hacia un punto de fuga.", "Que todos los objetos tengan el mismo tamaño sin importar la distancia.", "Que los colores sean más brillantes.", "Que las líneas rectas se curven automáticamente."]],
+        ["¿Cuál es el propósito de dividir las coordenadas transformadas por el componente w en la proyección en perspectiva?", "Para convertir coordenadas 3D en coordenadas de pantalla, aplicando la perspectiva.", ["Para determinar el tamaño de la textura aplicada.", "Para calcular la iluminación de los píxeles.", "Para convertir coordenadas 3D en coordenadas de pantalla, aplicando la perspectiva.", "Para normalizar los colores RGB."]],
+        ["Si se aplica una matriz de escalado 3D: (2, 0, 0; 0, 3, 0; 0, 0, 1) al punto (1, 2, -5), ¿cuál es el nuevo punto?", "(2, 6, -5)", ["(2, 6, -5)", "(2, 6, -10)", "(3, 4, -5)", "(1, 2, -5)"]],
+        ["¿Qué algoritmo es más utilizado para la navegación de NPCs en mapas?", "Algoritmo A*", ["Redes Neuronales", "Minimax", "Algoritmo A*", "Perlin Noises"]],
+        ["¿Las etapas del desarrollo de un videojuego son?", "Concepto, Pre-producción, producción, QA y Cierre, Post-Release.", ["Explorar, descubrir,  competir y ganar.", "Concepto, Pre-producción, producción, QA y Cierre, Post-Release.", "Espiral, cascada, iterativo, incremental.", "Concepto, producción, QA y Cierre, Post-Release."]],
+        ["¿Cuál es una de las principales ventajas de Unity?", "Soporte para múltiples plataformas", ["Exclusivo para juegos AAA", "No requiere conocimientos de programación", "Gratuito sin limitaciones", "Soporte para múltiples plataformas"]],
+        ["¿Cuál de los siguientes componentes es responsable del rendimiento gráfico en una consola?", "GPU", ["Disco duro", "RAM", "GPU", "CPU"]],
+        ["¿Qué es un motor de videojuegos?", "Una plataforma que unifica programación y elementos creativos.", ["Un sistema para gestionar servidores multijugador.", "Una plataforma que unifica programación y elementos creativos.", "Un lenguaje de programación exclusivo para juegos.", "Un hardware especializado para ejecutar juegos."]],
+        ["¿Cómo afecta el uso de servidores dedicados a los videojuegos en línea?", "Reduce la latencia y mejora la estabilidad", ["No tiene impacto", "Reduce la latencia y mejora la estabilidad", "Hace los juegos más baratos", "Permite jugar sin conexión"]],
+        ["¿Cuál de las siguientes tareas pertenece a la fase de preproducción?", "Creación del prototipo", ["Desarrollo del motor gráfico", "Testeo final del juego", "Lanzamiento del juego", "Creación del prototipo"]],
+        ["¿Cuál de los siguientes aspectos se evalúa en las pruebas de jugabilidad?", "Equilibrio y experiencia del jugador", ["Calidad gráfica", "Publicidad en redes sociales", "Estrategias de marketing", "Equilibrio y experiencia del jugador"]],
+        ["¿Qué motor permite gestionar el estado actual del juego mediante guardado y carga?", "Motor de persistencia.", ["Motor de escenas.", "Motor de entrada.", "Motor de scripting.", "Motor de persistencia."]],
+        ["¿Cuál de las siguientes técnicas se basa en reglas predefinidas y respuestas específicas a estímulos?", "Máquinas de Estados Finitos (FSM)", ["Máquinas de Estados Finitos (FSM)", "Redes Neuronales", "Aprendizaje Profundo", "Algoritmo Genético."]],
+        ["¿Qué se recomienda para acelerar el desarrollo de un videojuego?", "Usar bibliotecas y motores existentes", ["Evitar el uso de prototipos", "Inventar todas las herramientas desde cero", "Usar bibliotecas y motores existentes", "Focalizarse solo en el diseño visual"]],
+        ["¿Cuál de estas técnicas permite que un NPC aprenda de la experiencia y mejore su comportamiento con el tiempo?", "Aprendizaje reforzado", ["Árboles de decisión", "Shaders gráficos", "Pathfinding", "Aprendizaje reforzado"]],
+        ["¿Cuál de los siguientes motores es gratuito y de código abierto con una comunidad activa?", "Godot Engine.", ["Roblox Studio.", "Stencyl.", "Godot Engine.", "Adventure Game Studio."]],
+        ["¿Qué representa el gameplay en el diseño del videojuego?", "Las mecánicas y experiencia del jugador", ["La narrativa del juego", "Las mecánicas y experiencia del jugador", "Los efectos visuales y sonoros", "El diseño de los personajes secundarios"]],
+        ["¿Qué componente de la arquitectura de juegos en red gestiona la comunicación entre jugadores?", "El servidor", ["La física del juego", "El servidor", "La tarjeta de video", "El motor gráfico"]]
+
+    ];
+
+    let respuestasCorrectas = 0;
+    const form = document.getElementById("cuestionario");
+
+    function renderizarCuestionario() {
+      respuestasCorrectas = 0;
+      form.innerHTML = '';
+
+      preguntas.forEach(([pregunta, respuestaCorrecta, opciones], i) => {
+        const preguntaElement = document.createElement('div');
+        preguntaElement.className = 'pregunta';
+        preguntaElement.innerHTML = `
+          <label>${i + 1}. ${pregunta}</label>
+          <div class="opciones">
+            ${opciones.map((opcion, j) => `
+              <label class="opcion">
+                <input type="radio" name="respuesta${i}" value="${opcion}">
+                ${opcion}
+              </label>
+            `).join('')}
+          </div>
+          <div class="botones">
+            <button type="button" class="verificar" onclick="verificarRespuesta(${i}, '${escapeHtml(respuestaCorrecta)}')">
+              Verificar
+            </button>
+          </div>
+          <div class="feedback" id="feedback${i}"></div>
+        `;
+        form.appendChild(preguntaElement);
+      });
+
+      document.getElementById('resultados').style.display = 'none';
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function verificarRespuesta(index, respuestaCorrecta) {
+      const opciones = document.getElementsByName(`respuesta${index}`);
+      let seleccion = "";
+      opciones.forEach((opcion) => {
+        if (opcion.checked) seleccion = opcion.value;
+      });
+
+      const feedback = document.getElementById(`feedback${index}`);
+      if (seleccion === respuestaCorrecta) {
+        feedback.innerHTML = "✓ <span class='correcto'>¡Correcto! Buen trabajo.</span>";
+        feedback.style.display = 'block';
+        respuestasCorrectas++;
+      } else if (seleccion === "") {
+        feedback.innerHTML = "⚠ <span class='incorrecto'>Por favor selecciona una respuesta.</span>";
+        feedback.style.display = 'block';
+        return;
+      } else {
+        feedback.innerHTML = `✗ <span class='incorrecto'>Incorrecto. La respuesta correcta es: ${respuestaCorrecta}</span>`;
+        feedback.style.display = 'block';
+      }
+
+      verificarCompletado();
+    }
+
+    function verificarCompletado() {
+      let todasRespondidas = true;
+      preguntas.forEach((_, i) => {
+        const opciones = document.getElementsByName(`respuesta${i}`);
+        let seleccionada = false;
+        opciones.forEach(opcion => {
+          if (opcion.checked) seleccionada = true;
+        });
+        if (!seleccionada) todasRespondidas = false;
+      });
+
+      if (todasRespondidas) {
+        mostrarResultados();
+      }
+    }
+
+    function mostrarResultados() {
+      const resultados = document.getElementById('resultados');
+      const puntuacion = document.getElementById('puntuacion');
+      const progressBar = document.getElementById('progress-bar');
+
+      const porcentaje = Math.round((respuestasCorrectas / preguntas.length) * 100);
+
+      puntuacion.textContent = `Has acertado ${respuestasCorrectas} de ${preguntas.length} preguntas (${porcentaje}%)`;
+      progressBar.style.width = `${porcentaje}%`;
+
+      if (porcentaje >= 80) {
+        progressBar.style.backgroundColor = '#27ae60';
+      } else if (porcentaje >= 50) {
+        progressBar.style.backgroundColor = '#f39c12';
+      } else {
+        progressBar.style.backgroundColor = '#e74c3c';
+      }
+
+      resultados.style.display = 'block';
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+
+    function reiniciarCuestionario() {
+      renderizarCuestionario();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    renderizarCuestionario();
+  </script>
+</body>
+</html>

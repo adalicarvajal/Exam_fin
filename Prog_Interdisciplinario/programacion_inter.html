@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prog Interdisciplinario</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #34db55;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --dark-color: #34495e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 800px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 30px 0;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 10px;
+    }
+
+    .pregunta {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid var(--secondary-color);
+      transition: transform 0.3s ease;
+    }
+
+    .pregunta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .pregunta label {
+      display: block;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+
+    .opciones {
+      margin: 15px 0;
+    }
+
+    .opcion {
+      display: block;
+      margin: 10px 0;
+      padding: 10px 15px;
+      background-color: var(--light-color);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .opcion:hover {
+      background-color: #d6eaf8;
+    }
+
+    .opcion input {
+      margin-right: 10px;
+    }
+
+    .botones {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .verificar {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .verificar:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .reiniciar {
+      background-color: var(--accent-color);
+      color: white;
+      margin-top: 30px;
+    }
+
+    .reiniciar:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .feedback {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 5px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .correcto {
+      background-color: rgba(39, 174, 96, 0.1);
+      color: var(--success-color);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .incorrecto {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: var(--accent-color);
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .resultados {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: var(--light-color);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .progress-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background-color: var(--success-color);
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .volver-menu {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 25px;
+      background-color: var(--dark-color);
+      color: white;
+      border-radius: 5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .volver-menu:hover {
+      background-color: #2c3e50;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 95%;
+        padding: 15px;
+      }
+
+      .pregunta {
+        padding: 15px;
+      }
+
+      button {
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Prog Interdisciplinario</h1>
+    <form id="cuestionario"></form>
+
+    <button class="reiniciar" onclick="reiniciarCuestionario()">Reiniciar Cuestionario</button>
+
+    <div class="resultados" id="resultados">
+      <h2>Resultados</h2>
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <p id="puntuacion"></p>
+    </div>
+
+    <!-- Botón de volver al menú principal -->
+    <div class="botones">
+      <a href="../index.html" class="volver-menu">← Volver al Menú Principal</a>
+    </div>
+  </div>
+
+  <script>
+    const preguntas = [
+
+        ["¿Cuál de las siguientes alternativas estipulan una manera incorrecta de evitar sesgos en el planteamiento de preguntas en una encuesta?", "Proporcionar categorias de respuestas exhaustiva, imparcial y no excluyentes.", ["Proporcionar categorias de respuestas exhaustiva, imparcial y no excluyentes.", "Haga suficientes preguntas para cubrir adecuadamente el tema.", "Tenga cuidado de usar redacción que influya en la forma en que el encuestado piensa en el problema.", "Escriba instrucciones o comentarios claros e imparciales.", "Es necesario tomar en cuenta el orden de las preguntas y que no influya la respuesta contestada en la pregunta siguiente."]],
+        ["¿Cuál de las siguientes opciones corresponde a la definición de una encuesta?", "Es un sistema integral de recopilación de información para describir, comparar o explicar conocimientos, actitudes y comportamientos.", ["Es solo el instrumento (el cuestionario o la lista de verificación) para recopilar información.", "Es un sistema integral de recopilación de información para describir, comparar o explicar conocimientos, actitudes y comportamientos.", "Estudio que se le realiza a un grupo de personas, estas no representan a una población más amplia.", "Es una conversación dirigida, con un propósito especifico y que usa un formato de preguntas y respuestas.", "Técnica útil para el analista en su proceso de investigación, consiste en observar a las personas cuando efectúan su trabajo."]],
+        ["¿Cuál de las siguientes opciones representa la actividad que se debe realizar después de diseñar y administrar una encuesta?", "Realizar un análisis de datos.", ["Hacer la encuesta.", "Realizar un análisis de datos.", "Implementar cuestionarios.", "Investigar sesgos sistemáticos.", "Sacar conclusiones."]],
+        ["¿Cuál de las siguientes opciones representa un planteamiento incorrecto en relación con la población objetivo en una encuesta?", "Es un conjunto representativo de personas que estén en condiciones de responder a las preguntas de la encuesta.", ["Es un conjunto representativo de personas que estén en condiciones de responder a las preguntas de la encuesta.", "Se representa como una lista finita de todos sus miembros.", "Su definición surge de los objetivos de la encuesta.", "La población objetivo específica puede ser en sí misma un subconjunto de una población más grande.", "Puede especificarse mediante el uso de criterios de inclusión o exclusión."]],
+        ["¿Cuál de las siguientes opciones corresponde al orden de actividades adecuado para realizar una investigación?", "Problema, idea, estado del arte, investigación, reporte", ["Idea, problema, estado del arte, reporte, investigación", "Problema, estado del arte, investigación, idea, reporte", "Problema, investigación, estado del arte, idea, reporte", "Problema, idea, estado del arte, investigación, reporte", "Idea, estado del arte, problema, reporte, investigación"]],
+        ["¿Cuál(es) de las siguientes afirmaciones no corresponden a los criterios por los cuales se clasifica la investigación?", "De acuerdo a la época en la cual se lleva a cabo la investigación", ["De acuerdo al tipo de problema que se aborda", "Según el propósito de carácter teórico o de solución de problemas", "Según el tipo de instrumentos utilizados en la recolección, procesamiento y análisis de los datos", "En función del método y de la relación investigador-investigado", "De acuerdo a la época en la cual se lleva a cabo la investigación"]],
+        ["¿Cuál de las siguientes afirmaciones representa el orden adecuado de las actividades a realizarse para la definición de una problemática?", "Identificación del problema, búsqueda de información, elaboración del problema y formulación del problema", ["Identificación del problema, búsqueda de información, elaboración del problema y formulación del problema", "Identificación del problema, observación del problema, revisión de literatura, estructuración del problema y refinamiento del problema", "Identificación del problema, estructuración del problema, análisis del problema, planteamiento del problema y revisión de literatura", "Identificación del problema, estructuración del problema, análisis del problema, planteamiento del problema y observación del problema", "Identificación del problema, búsqueda de información, elaboración del problema y planeación del problema"]],
+        ["¿Cuál de los siguientes postulados propone la real importancia de una Revisión de Literatura Preliminar (RLP)?", "A través de un RLP se sintetiza la información relevante de los estudios primarios de una manera razonable, se obtienen resultados con valor científico", ["A través de un RLP se sintetiza la información relevante de los estudios primarios de una manera razonable, se obtienen resultados con valor científico", "Toda investigación inicia con una RLP, se obtienen importantes resultados de tipo observacional y se minimizan los trabajos existente", "Identifica, evalúa e interpreta toda la información relevante a un área temática, fenómeno de interés o pregunta de investigación", "Un RLP es un estudio secundario a través del cual se pueden generalizar los hallazgos obtenidos", "Un RLP cubre el universo de investigación de una temática específica"]],
+        ["La investigación es:", "El proceso sistemático de recopilación y análisis de información (datos) para aumentar la comprensión sobre el fenómeno que nos concierne o nos interesa.", ["El proceso sistemático de recopilación y análisis de información (datos) para aumentar la comprensión sobre el fenómeno que nos concierne o nos interesa.", "El proceso sincrónico de recopilación y análisis de información (datos) para aumentar la comprensión sobre el fenómeno que nos concierne o nos interesa", "El proceso sistemático de creación y análisis de información (datos) para aumentar la comprensión sobre el fenómeno que nos concierne o nos interesa", "El proceso sistemático de síntesis de información (datos) para aumentar la comprensión sobre el fenómeno que nos concierne o nos interesa."]],
+        ["¿Cuál es el primer paso del proceso de investigación científica?", "Definir el problema", ["Diseñar el estudio", "Formular hipótesis", "Definir el problema", "Analizar datos"]],
+        ["¿Qué sistema utiliza el estilo APA para la citación en el texto?", "Autor-año", ["Autor-página", "Autor-año", "Número-página", "Abreviatura-numero"]],
+        ["¿Cuál es el formato para una cita textual corta?", "Menos de 40 palabras y entre comillas", ["Menos de 20 palabras y cursiva", "Menos de 30 palabras y negrita", "Menos de 40 palabras y entre comillas", "Más de 50 palabras y con sangría"]],
+        ["¿Qué debe incluir una cita textual larga?", "Texto separado, sin comillas, con sangría de 1.27 cm", ["Comillas y letra cursiva", "Texto separado, sin comillas, con sangría de 1.27 cm", "Texto en negrita con letra más grande", "Texto subrayado y centrado"]],
+        ["¿Cuándo se utiliza 'et al.' en una cita?", "Para citar tres o más autores", ["Para citar más de dos autores", "Para citar autores corporativos", "Para citar tres o más autores", "Para todas las citas"]],
+        ["¿Qué se debe hacer cuando se citan dos autores con el mismo apellido?", "Incluir las iniciales de sus nombres", ["Usar solo el apellido", "Incluir las iniciales de sus nombres", "Colocar los apellidos en cursiva", "Usar la palabra 'y' entre los apellidos"]],
+        ["¿Qué se utiliza para indicar una fuente sin fecha?", "(s.f.)", ["(s.f.)", "(n.d.)", "(sin fecha)", "(desconocido)"]],
+        ["¿Qué tipo de cita no requiere referencia?", "Citas de obras clásicas", ["Citas de fuentes secundarias", "Citas de obras clásicas", "Citas de publicaciones periódicas", "Citas de sitios web"]],
+        ["¿Cuál es la diferencia entre referencias y bibliografía en APA?", "La bibliografía incluye fuentes citadas y no citadas", ["La bibliografía incluye solo las fuentes citadas", "Las referencias incluyen todas las fuentes investigadas", "La bibliografía incluye fuentes citadas y no citadas", "Las referencias no requieren formato específico"]],
+        ["¿Cuál es el formato correcto para una cita narrativa de un solo autor?", "López (2020)", ["(López, 2020)", "López (2020)", "(2020, López)", "López - 2020"]],
+        ["¿Qué se debe incluir en la referencia de un libro?", "Autor, año, título y editorial", ["Año y país de publicación", "Título, autor y ciudad de publicación", "Autor, año, título y editorial", "Solo el autor y título"]],
+        ["¿Cómo se ordenan las referencias en la lista?", "Por orden alfabético del apellido del autor", ["Por fecha de publicación", "Por título de la obra", "Por orden alfabético del apellido del autor", "Por tipo de fuente"]],
+        ["¿Cuál es el formato correcto para una cita de un autor corporativo con sigla?", "(OMS, 2020)", ["(OMS, 2020)", "OMS, 2020", "(Organización Mundial de la Salud, 2020)", "Salud, OMS, 2020"]],
+        ["¿En qué casos se utiliza una sangría francesa?", "En el formato de referencias", ["En citas largas", "En el formato de referencias", "En títulos de secciones", "En citas parentéticas"]],
+        ["¿Qué se hace si una fuente tiene más de 20 autores?", "Se omiten los autores después del 19 y se usa 'et al.'", ["Se listan todos los autores", "Se omiten los autores después del 19 y se usa 'et al.'", "Se citan solo los tres primeros", "Se cita solo el primer autor"]],
+        ["¿Cómo se cita una obra sin autor?", "Usando el título de la obra", ["Usando 'Anónimo'", "Usando el título de la obra", "Usando 'Desconocido'", "Usando el nombre del editor"]],
+        ["¿Qué elemento no se incluye en las referencias de un libro en APA 7ma edición?", "Ciudad de publicación", ["Nombre del autor", "Ciudad de publicación", "Título del libro", "Editorial"]],
+        ["¿Cuál es el formato correcto para citar un video en línea?", "Apellido, título del video, fuente, URL", ["Apellido, Año, URL", "Título del video, fecha, autor", "Apellido, título del video, fuente, URL", "URL, fecha, autor"]],
+        ["¿Cómo se citan varias obras del mismo autor con igual fecha?", "Agregando letras al año (a, b, c)", ["Usando números romanos", "Agregando letras al año (a, b, c)", "Usando comillas dobles", "Incluyendo el título de la obra"]],
+        ["¿Qué se hace si la cita no tiene número de página?", "Se usa el número del párrafo", ["Se omite la cita", "Se usa el número del párrafo", "Se coloca 'sin página'", "Se coloca 'página desconocida'"]],
+        ["¿Qué tipo de cita enfatiza el autor?", "Cita narrativa", ["Cita narrativa", "Cita parentética", "Cita directa", "Parafraseo"]],
+        ["¿En qué idioma se deben adaptar las normas de citación según el documento?", "Español", ["Inglés", "Español", "Francés", "Portugués"]],
+        ["¿Qué tipo de fuente se recomienda utilizar para citas textuales?", "Times New Roman 12 puntos", ["Arial 14 puntos", "Times New Roman 12 puntos", "Calibri 11 puntos", "Georgia 10 puntos"]],
+        ["¿Qué palabra se usa para indicar una traducción en la referencia?", "[Trad.]", ["Traducido por", "[Trad.]", "Translated", "Versión traducida"]],
+        ["¿Cómo se indica una cita de material audiovisual?", "Usando la marca de tiempo (minuto:segundo)", ["Usando 'p.' para el tiempo", "Usando la marca de tiempo (minuto:segundo)", "Usando el año de la producción", "Usando el nombre del director"]],
+        ["¿Qué tipo de citas requieren el uso de 'pp.'?", "Citas con más de una página", ["Citas de un solo párrafo", "Citas con más de una página", "Citas de menos de 40 palabras", "Citas sin autor"]],
+        ["¿Qué es un abstract en un artículo científico?", "Un resumen breve y autónomo del manuscrito.", ["Un resumen breve y autónomo del manuscrito.", "Una parte opcional del manuscrito.", "Una lista de referencias del estudio.", "Un documento separado del artículo."]],
+        ["¿Cuál de los siguientes NO es un tipo de abstract?", "Extensivo.", ["Descriptivo.", "Informativo.", "Extensivo.", "Destacado."]],
+        ["¿Qué estructura suele seguir un abstract estructurado?", "IMRAD (Introducción, Metodología, Resultados y Discusión).", ["IMRAD (Introducción, Metodología, Resultados y Discusión).", "Título, Autores, Referencias, Conclusiones.", "Introducción, Resultados, Análisis, Bibliografía.", "Propósito, Métodos, Resultados, Citas."]],
+        ["¿Qué característica NO es parte de un buen abstract?", "Complejo.", ["Conciso.", "Claro.", "Complejo.", "Crítico."]],
+        ["¿Cuál es la principal función de un abstract?", "Atraer al lector y proporcionar un resumen del estudio.", ["Proporcionar una lista detallada de referencias.", "Atraer al lector y proporcionar un resumen del estudio.", "Presentar los resultados en detalle con gráficos.", "Discutir a fondo la metodología utilizada."]],
+        ["¿Cuál fue la primera revista en publicar un abstract en formato de un solo párrafo?", "Canadian Medical Association Journal.", ["The Lancet.", "Canadian Medical Association Journal.", "Nature.", "Science."]],
+        ["¿Qué debe incluir un abstract estructurado en su sección de 'Resultados'?", "Los hallazgos más relevantes, incluyendo datos estadísticos clave.", ["Solo una descripción general del estudio.", "Los hallazgos más relevantes, incluyendo datos estadísticos clave.", "Un análisis profundo de la literatura previa.", "Comentarios de otros investigadores sobre el tema."]],
+        ["¿Por qué un abstract es crucial para la indexación de un artículo?", "Porque ayuda a los lectores a decidir si leer el artículo completo.", ["Porque contiene citas de otros trabajos.", "Porque ayuda a los lectores a decidir si leer el artículo completo.", "Porque resume la bibliografía utilizada.", "Porque reemplaza la introducción del artículo."]],
+        ["¿Cuál de los siguientes NO debe incluirse en un abstract?", "Abreviaciones no explicadas.", ["Abreviaciones no explicadas.", "Resultados clave del estudio.", "Conclusiones del estudio.", "Recomendaciones basadas en los hallazgos."]],
+        ["¿Qué diferencia hay entre un abstract para un congreso y uno para una revista?", "En los congresos, el abstract puede incluir tablas o figuras.", ["En los congresos, el abstract puede incluir tablas o figuras.", "No hay diferencia entre ambos formatos.", "En un congreso, el abstract es más extenso que en una revista.", "Los abstracts de congresos no tienen límite de palabras."]],
+        ["¿Qué es un dato en estadística?", "Un conjunto de información sin procesar.", ["Un número aleatorio sin contexto.", "Un conjunto de información sin procesar.", "Un gráfico que resume información.", "Una medida de centralización."]],
+        ["¿Qué tipo de variable es el color de los ojos?", "Nominal.", ["Nominal.", "Ordinal.", "Intervalo.", "Ratio."]],
+        ["¿Cuál de las siguientes escalas de medición permite operaciones matemáticas como la suma y resta, pero no la multiplicación o división?", "Intervalo.", ["Nominal.", "Ordinal.", "Intervalo.", "Ratio."]],
+        ["¿Qué medida de tendencia central se ve más afectada por valores extremos?", "Media.", ["Moda.", "Media.", "Mediana.", "Rango intercuartílico."]],
+        ["¿Qué medida de dispersión es más resistente a valores extremos?", "Mediana absoluta de desviación (MAD).", ["Rango.", "Desviación estándar.", "Mediana absoluta de desviación (MAD).", "Media."]],
+        ["Si un conjunto de datos tiene una distribución normal, ¿qué relación hay entre la media, mediana y moda?", "Media = Mediana = Moda.", ["Media < Mediana < Moda.", "Media > Mediana > Moda.", "Media = Mediana = Moda.", "No hay relación."]],
+        ["¿Qué gráfico se usa comúnmente para detectar valores atípicos en un conjunto de datos?", "Boxplot (diagrama de caja y bigotes).", ["Histograma.", "Gráfico de líneas.", "Gráfico de dispersión.", "Boxplot (diagrama de caja y bigotes)."]],
+        ["¿Cuál es la principal diferencia entre estadísticas descriptivas e inferenciales?", "Las estadísticas descriptivas resumen datos, mientras que las inferenciales hacen predicciones basadas en datos muestrales.", ["Las estadísticas descriptivas resumen datos, mientras que las inferenciales hacen predicciones basadas en datos muestrales.", "Las estadísticas inferenciales siempre son más precisas que las descriptivas.", "Las estadísticas descriptivas requieren una gran cantidad de datos.", "No hay diferencia."]],
+        ["¿Qué prueba estadística se usa para comparar las medias de tres o más grupos?", "ANOVA.", ["Prueba t de Student.", "ANOVA.", "Prueba de chi-cuadrado.", "Regresión lineal."]],
+        ["¿Qué tipo de error cometes si rechazas una hipótesis nula verdadera?", "Error tipo I.", ["Error tipo I.", "Error tipo II.", "Error de estimación.", "Error de muestreo."]],
+        ["¿Cuál es el nivel de confianza más comúnmente usado en inferencia estadística?", "95%.", ["80%.", "90%.", "95%.", "99%."]],
+        ["¿Qué representa un p-valor en una prueba de hipótesis?", "La probabilidad de obtener resultados iguales o más extremos si la hipótesis nula es cierta.", ["La probabilidad de que la hipótesis nula sea verdadera.", "La probabilidad de obtener resultados iguales o más extremos si la hipótesis nula es cierta.", "La certeza absoluta de que un resultado es significativo.", "La diferencia exacta entre dos grupos."]],
+        ["¿Qué método es apropiado si los datos no cumplen con la normalidad?", "Pruebas no paramétricas como la de Mann-Whitney U.", ["Prueba t de Student.", "ANOVA.", "Pruebas no paramétricas como la de Mann-Whitney U.", "Regresión lineal."]],
+        ["¿Qué mide la kurtosis en una distribución de datos?", "La altura y forma de la curva de la distribution.", ["El grado de asimetría de la distribución.", "La dispersión de los datos alrededor de la media.", "La altura y forma de la curva de la distribución.", "La relación entre la media y la mediana."]],
+        ["¿Cuál de los siguientes es un método gráfico para evaluar la normalidad de un conjunto de datos?", "Gráfico Q-Q (Quantile-Quantile).", ["Prueba de Kolmogorov-Smirnov.", "Prueba de Shapiro-Wilk.", "Gráfico Q-Q (Quantile-Quantile).", "Prueba de chi-cuadrado."]]
+
+
+    ];
+
+    let respuestasCorrectas = 0;
+    const form = document.getElementById("cuestionario");
+
+    function renderizarCuestionario() {
+      respuestasCorrectas = 0;
+      form.innerHTML = '';
+
+      preguntas.forEach(([pregunta, respuestaCorrecta, opciones], i) => {
+        const preguntaElement = document.createElement('div');
+        preguntaElement.className = 'pregunta';
+        preguntaElement.innerHTML = `
+          <label>${i + 1}. ${pregunta}</label>
+          <div class="opciones">
+            ${opciones.map((opcion, j) => `
+              <label class="opcion">
+                <input type="radio" name="respuesta${i}" value="${opcion}">
+                ${opcion}
+              </label>
+            `).join('')}
+          </div>
+          <div class="botones">
+            <button type="button" class="verificar" onclick="verificarRespuesta(${i}, '${escapeHtml(respuestaCorrecta)}')">
+              Verificar
+            </button>
+          </div>
+          <div class="feedback" id="feedback${i}"></div>
+        `;
+        form.appendChild(preguntaElement);
+      });
+
+      document.getElementById('resultados').style.display = 'none';
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function verificarRespuesta(index, respuestaCorrecta) {
+      const opciones = document.getElementsByName(`respuesta${index}`);
+      let seleccion = "";
+      opciones.forEach((opcion) => {
+        if (opcion.checked) seleccion = opcion.value;
+      });
+
+      const feedback = document.getElementById(`feedback${index}`);
+      if (seleccion === respuestaCorrecta) {
+        feedback.innerHTML = "✓ <span class='correcto'>¡Correcto! Buen trabajo.</span>";
+        feedback.style.display = 'block';
+        respuestasCorrectas++;
+      } else if (seleccion === "") {
+        feedback.innerHTML = "⚠ <span class='incorrecto'>Por favor selecciona una respuesta.</span>";
+        feedback.style.display = 'block';
+        return;
+      } else {
+        feedback.innerHTML = `✗ <span class='incorrecto'>Incorrecto. La respuesta correcta es: ${respuestaCorrecta}</span>`;
+        feedback.style.display = 'block';
+      }
+
+      verificarCompletado();
+    }
+
+    function verificarCompletado() {
+      let todasRespondidas = true;
+      preguntas.forEach((_, i) => {
+        const opciones = document.getElementsByName(`respuesta${i}`);
+        let seleccionada = false;
+        opciones.forEach(opcion => {
+          if (opcion.checked) seleccionada = true;
+        });
+        if (!seleccionada) todasRespondidas = false;
+      });
+
+      if (todasRespondidas) {
+        mostrarResultados();
+      }
+    }
+
+    function mostrarResultados() {
+      const resultados = document.getElementById('resultados');
+      const puntuacion = document.getElementById('puntuacion');
+      const progressBar = document.getElementById('progress-bar');
+
+      const porcentaje = Math.round((respuestasCorrectas / preguntas.length) * 100);
+
+      puntuacion.textContent = `Has acertado ${respuestasCorrectas} de ${preguntas.length} preguntas (${porcentaje}%)`;
+      progressBar.style.width = `${porcentaje}%`;
+
+      if (porcentaje >= 80) {
+        progressBar.style.backgroundColor = '#27ae60';
+      } else if (porcentaje >= 50) {
+        progressBar.style.backgroundColor = '#f39c12';
+      } else {
+        progressBar.style.backgroundColor = '#e74c3c';
+      }
+
+      resultados.style.display = 'block';
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+
+    function reiniciarCuestionario() {
+      renderizarCuestionario();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    renderizarCuestionario();
+  </script>
+</body>
+</html>

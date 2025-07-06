@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diseño de Bases de Datos</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #34db55;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --dark-color: #34495e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 800px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 30px 0;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 10px;
+    }
+
+    .pregunta {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid var(--secondary-color);
+      transition: transform 0.3s ease;
+    }
+
+    .pregunta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .pregunta label {
+      display: block;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+
+    .opciones {
+      margin: 15px 0;
+    }
+
+    .opcion {
+      display: block;
+      margin: 10px 0;
+      padding: 10px 15px;
+      background-color: var(--light-color);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .opcion:hover {
+      background-color: #d6eaf8;
+    }
+
+    .opcion input {
+      margin-right: 10px;
+    }
+
+    .botones {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .verificar {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .verificar:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .reiniciar {
+      background-color: var(--accent-color);
+      color: white;
+      margin-top: 30px;
+    }
+
+    .reiniciar:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .feedback {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 5px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .correcto {
+      background-color: rgba(39, 174, 96, 0.1);
+      color: var(--success-color);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .incorrecto {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: var(--accent-color);
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .resultados {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: var(--light-color);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .progress-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background-color: var(--success-color);
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .volver-menu {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 25px;
+      background-color: var(--dark-color);
+      color: white;
+      border-radius: 5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .volver-menu:hover {
+      background-color: #2c3e50;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 95%;
+        padding: 15px;
+      }
+
+      .pregunta {
+        padding: 15px;
+      }
+
+      button {
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Base de Datos</h1>
+    <form id="cuestionario"></form>
+
+    <button class="reiniciar" onclick="reiniciarCuestionario()">Reiniciar Cuestionario</button>
+
+    <div class="resultados" id="resultados">
+      <h2>Resultados</h2>
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <p id="puntuacion"></p>
+    </div>
+
+    <!-- Botón de volver al menú principal -->
+    <div class="botones">
+      <a href="../index.html" class="volver-menu">← Volver al Menú Principal</a>
+    </div>
+  </div>
+
+  <script>
+    const preguntas = [
+        ["¿Cómo se denomina el software que permite a los usuarios procesar, describir, administrar y recuperar los datos almacenados de una base de datos?", "El resto de las opciones son todas correctas", ["SGBD", "Sistema de Gestión de Base de Datos", "El resto de las opciones son todas correctas", "DBMS"]],
+        ["En este tipo de relación un registro en la tabla secundaria tiene o posee varios registros en la tabla principal.", "Varios a uno", ["Uno a uno", "Varios a varios", "Uno a Varios", "Varios a uno"]],
+        ["Método mediante el cual, una base de datos genera un archivo auxiliar donde se ubica la información rápidamente mediante un campo clave.", "Indexación", ["Generalización", "Especialización", "Indexación", "Normalización"]],
+        ["La consulta para crear una lista de todos los números de préstamo y del importe de estos puede escribirse como:", "π número-préstamo, importe (préstamo)", ["π número-préstamo, número (préstamo)", "π número-préstamo, número (clientes)", "Ninguna de las opciones es correcta", "π número-préstamo, importe (préstamo)"]],
+        ["Un demandante de empleo puede realizar varios cursos y, a su vez, un curso puede ser realizado por varios demandantes. ¿Qué cardinalidad representa esta relación?", "Una relación muchos a muchos.", ["Una relación muchos a muchos.", "Una relación uno a uno.", "Una relación uno a muchos.", "Una relación muchos a uno."]],
+        ["¿Dónde se almacenaría la fecha de emisión de una factura en un esquema Entidad-Relación?", "En la entidad FACTURA.", ["En la entidad FACTURA.", "En la relación que asocie la entidad FACTURA y CLIENTE.", "En la entidad CLIENTE, debiendo añadirse NUM_FACTURA a dicha entidad.", "Todas las respuestas son correctas."]],
+        ["Operador que permite mostrar filas, columnas o registros:", "Proyección", ["Producto cartesiano", "Selección", "Ninguna de las opciones es correcta", "Proyección"]],
+        ["JOIN es:", "producto cartesiano, selección y proyección", ["unión, selección y producto cartesiano", "producto cartesiano, selección y proyección", "división, selección y producto cartesiano", "intersección, selección y producto cartesiano"]],
+        ["Al proceso de transformar datos en información, información en conocimiento y conocimiento en sabiduría se conoce como:", "Inteligencia de negocios", ["Inteligencia de negocios", "Análisis de datos", "Ninguna de las opciones es correcta.", "Minería de datos"]],
+        ["Si una tabla se divide en dos para eliminar dependencias transitivas, ¿a qué forma normal se está llevando?", "3FN", ["1FN", "4FN", "2FN", "3FN"]],
+        ["¿Cuál de los siguientes modelos de diseño es más adecuado para representar sistemas orientados a la toma de decisiones con estructuras de agregación y medida?", "Modelo Estrella", ["Modelo Estrella", "Modelo Entidad-Relación", "Modelo Relacional Normalizado", "Modelo Objeto-Relacional"]],
+        ["¿Qué técnica permite mejorar la eficiencia en consultas OLAP al reducir la redundancia de datos en estructuras dimensionales complejas?", "Modelo copo de nieve", ["Normalización en tercera forma normal", "Modelo copo de nieve", "Replicación síncrona", "Índices agrupados"]],
+        ["En un entorno de producción, ¿cuál de las siguientes tecnologías es adecuada para permitir conectividad entre aplicaciones y bases de datos heterogéneas?", "JDBC", ["HTTP", "JDBC", "HTML", "XML"]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor la utilidad de un proceso ETL en un entorno de producción?", "Extrae, transforma y carga datos desde fuentes heterogéneas a un Data Warehouse", ["Se encarga únicamente de validar transacciones en línea", "Permite eliminar la redundancia en bases relacionales", "Extrae, transforma y carga datos desde fuentes heterogéneas a un Data Warehouse", "Fragmenta las tablas para optimizar el almacenamiento local"]],
+        ["¿Cuál es la principal ventaja de la replicación de datos en sistemas distribuidos?", "Mejorar la disponibilidad y tolerancia a fallos", ["Aumentar el tamaño de los datos", "Evitar el uso de índices", "Mejorar la disponibilidad y tolerancia a fallos", "Facilitar la eliminación de datos duplicados"]],
+        ["¿Qué tipo de arquitectura distribuye las tareas de procesamiento entre múltiples nodos, sin necesidad de un nodo central coordinador?", "Punto a punto", ["Cliente-servidor", "Multipunto", "Punto a punto", "Maestro-esclavo"]],
+        ["¿Qué técnica de diseño permite que una base de datos distribuida divida sus datos lógicamente para mejorar rendimiento?", "Fragmentación", ["Fragmentación", "Denormalización", "Agregación", "Replicación"]],
+        ["¿Cuál es el principal desafío de ejecutar transacciones en una base de datos distribuida?", "Garantizar atomicidad, consistencia, aislamiento y durabilidad (ACID) en múltiples nodos", ["Indexar correctamente todas las tablas", "Eliminar relaciones entre entidades distribuidas", "Evitar el uso de claves primarias en las réplicas", "Garantizar atomicidad, consistencia, aislamiento y durabilidad (ACID) en múltiples nodos"]],
+        ["¿Qué lenguaje permite definir la estructura de objetos y sus relaciones en un sistema de base de datos orientado a objetos?", "ODL", ["ODL", "SQL", "DDL", "XML"]],
+        ["¿Cuál de los siguientes constructores orientados a objetos describe correctamente la herencia jerárquica de clases?", "Especialización / Generalización", ["Agregación", "Asociación", "Serialización", "Especialización / Generalización"]],
+        ["¿Cuál de las siguientes características diferencia a las máquinas de los humanos en el contexto de la inteligencia artificial?", "Capacidad de conciencia.", ["Capacidad de aprendizaje experiencial.", "Capacidad de autocorrección.", "Capacidad de aprendizaje asociativo.", "Capacidad de conciencia."]],
+        ["¿Cuál es el objetivo principal del algoritmo Minimax?", "Maximizar la utilidad de un jugador mientras minimiza la del otro.", ["Maximizar la utilidad de un jugador mientras minimiza la del otro.", "Minimizar el tiempo de búsqueda.", "Encontrar la solución óptima en entornos dinámicos.", "Reducir el uso de memoria en la búsqueda."]],
+        ["¿Qué caracteriza a la búsqueda heurística A*?", "Combina el costo del camino actual con la heurística para evaluar nodos.", ["Utiliza la heurística para evaluar nodos.", "Combina el costo del camino actual con la heurística para evaluar nodos.", "La diferencia entre el costo del camino actual y la heurística.", "Es un algoritmo de búsqueda no informada."]],
+        ["¿Qué es un predicado en lógica de primer orden?", "Una expresión que afirma algo sobre algún objeto o relación entre objetos.", ["Una declaración que siempre es verdadera.", "Una función que toma argumentos y devuelve un valor.", "Una expresión que afirma algo sobre algún objeto o relación entre objetos.", "Una constante o variable que se relaciona entre hechos."]],
+        ["En lógica de predicados, ¿cómo se formaliza la proposición 'Los números divisibles para sí mismo son número primos'?", "∀x (DivisiblePorSíMismo(x) → Primo(x))", ["∀x (DivisiblePorSíMismo(x) → Primo(x))", "∀x (Primo(x) → DivisiblePorSíMismo(x))", "∃x (DivisiblePorSíMismo(x) ∧ Primo(x))", "∃x (Primo(x) → DivisiblePorSíMismo(x))"]],
+        ["¿Cuál de las siguientes características no es típica de los Sistemas Expertos?", "Ejecución de reglas secuenciales con estructuras de control.", ["Razonamiento guiado por las metas.", "Manejo de incertidumbre avanzada.", "Razonamiento guiado por los datos.", "Ejecución de reglas secuenciales con estructuras de control."]],
+        ["¿Qué es la inferencia en lógica de predicados?", "El proceso de derivar conclusiones lógicas a partir de premisas dadas mediante reglas.", ["El proceso de asignar valores a variables según los hechos.", "El proceso de derivar conclusiones lógicas a partir de premisas dadas mediante reglas.", "El proceso de simplificar ecuaciones matemáticas.", "El proceso de almacenar datos en una base de conocimiento."]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor el Teorema de Bayes?", "Una fórmula matemática utilizada para actualizar la probabilidad de que ocurra un evento basándose en nuevas evidencias.", ["Una fórmula matemática utilizada para calcular la media de un conjunto de datos basándose en nuevas evidencias.", "Una regla lógica utilizada para derivar conclusiones a partir de premisas de hechos y reglas.", "Una fórmula matemática utilizada para actualizar la probabilidad de que ocurra un evento basándose en nuevas evidencias.", "Un algoritmo de búsqueda utilizado en inteligencia artificial."]],
+        ["¿Qué representa la expresión ∀x (Estudiante(x) → Feliz(x))?", "Todos los estudiantes son felices.", ["Todos los estudiantes son felices.", "Ningún estudiante es feliz.", "Al menos un estudiante es feliz.", "Algunos estudiantes son felices."]],
+        ["¿Cuál de las siguientes opciones define mejor el concepto de machine learning?", "Desarrollo de técnicas y algoritmos que aprendan y mejoren con el tiempo atraves de datos o la experiencia.", ["Algoritmos que tratan de simular el comportamiento racional e inteligente del humano.", "Técnica de aprendizaje supervisado.", "Desarrollo de técnicas y algoritmos que aprendan y mejoren con el tiempo atraves de datos o la experiencia.", "Técnica para escribir programas con instrucciones detalladas para resolver problemas específicos."]],
+        ["En el contexto de aprendizaje supervisado, ¿cuál es el principal beneficio de utilizar la regularización en modelos de machine learning?", "Reduce el riesgo de sobreajuste penalizando los coeficientes grandes y, por ende, mejorando la generalización del modelo en datos no conocidos.", ["Aumenta la complejidad del modelo para mejorar la capacidad de ajuste a los datos de entrenamiento.", "Incrementa la precisión del modelo al eliminar características irrelevantes de manera automática.", "Mejora la interpretación del modelo al omitir las relaciones entre las variables dependientes e independientes.", "Reduce el riesgo de sobreajuste penalizando los coeficientes grandes y, por ende, mejorando la generalización del modelo en datos no conocidos."]],
+        ["En el proceso de entrenamiento de un modelo de machine learning, ¿cuál es el propósito de utilizar un conjunto de validación además del conjunto de entrenamiento?", "Probar la capacidad del modelo para generalizar a datos no conocidos y ajustar hiperparámetros para minimizar el error en este conjunto.", ["Ajustar los hiperparámetros del modelo para minimizar el error en el conjunto de entrenamiento.", "Mejorar la precisión del modelo eliminando características redundantes y colineales.", "Probar la capacidad del modelo para generalizar a datos no conocidos y ajustar hiperparámetros para minimizar el error en este conjunto.", "Aumentar el tamaño del conjunto de datos de entrenamiento para mejorar la capacidad de ajuste del modelo."]],
+        ["¿Qué objetivo principal persigue el algoritmo de clustering en el contexto del aprendizaje no supervisado?", "Agrupar los datos de manera que, los datos dentro de cada conjunto sean más similares entre sí, y disimilares de los datos de otros conjuntos.", ["Agrupar los datos de manera que, los datos dentro de cada conjunto sean más similares entre sí, y disimilares de los datos de otros conjuntos.", "Predecir valores numéricos continuos a partir de datos de entrada en base a patrones de los datos.", "Optimizar la precisión de un modelo de clasificación mediante el ajuste de hiperparámetros.", "Generar nuevas características a partir de los datos originales para mejorar la calidad del modelo."]],
+        ["¿Cuál es el principal objetivo del algoritmo de aprendizaje no supervisado Análisis de Componentes Principales - PCA?", "Reducción de la dimensionalidad de las características.", ["Clasificación de datos en base a las características proporcionadas.", "Predicción de datos en base a las características proporcionadas.", "Conformar conjuntos de datos según patrones.", "Reducción de la dimensionalidad de las características."]],
+        ["¿Cuál es la diferencia entre regresión lineal y logística?", "En regresión lineal la variable dependiente excede el rango entre 0 y 1, en regresión logística está dentro del rango 0 y 1.", ["En regresión lineal la variable independiente excede el rango entre 0 y 1, en regresión logística está dentro del rango 0 y 1.", "En regresión lineal la variable dependiente excede el rango entre 0 y 1, en regresión logística está dentro del rango 0 y 1.", "En regresión lineal y logística el rango está entre 0 y 1.", "En regresión lineal la variable dependiente está en el rango entre 0 y 1, en regresión logística excede el rango entre 0 y 1."]]
+
+
+    ];
+
+    let respuestasCorrectas = 0;
+    const form = document.getElementById("cuestionario");
+
+    function renderizarCuestionario() {
+      respuestasCorrectas = 0;
+      form.innerHTML = '';
+
+      preguntas.forEach(([pregunta, respuestaCorrecta, opciones], i) => {
+        const preguntaElement = document.createElement('div');
+        preguntaElement.className = 'pregunta';
+        preguntaElement.innerHTML = `
+          <label>${i + 1}. ${pregunta}</label>
+          <div class="opciones">
+            ${opciones.map((opcion, j) => `
+              <label class="opcion">
+                <input type="radio" name="respuesta${i}" value="${opcion}">
+                ${opcion}
+              </label>
+            `).join('')}
+          </div>
+          <div class="botones">
+            <button type="button" class="verificar" onclick="verificarRespuesta(${i}, '${escapeHtml(respuestaCorrecta)}')">
+              Verificar
+            </button>
+          </div>
+          <div class="feedback" id="feedback${i}"></div>
+        `;
+        form.appendChild(preguntaElement);
+      });
+
+      document.getElementById('resultados').style.display = 'none';
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function verificarRespuesta(index, respuestaCorrecta) {
+      const opciones = document.getElementsByName(`respuesta${index}`);
+      let seleccion = "";
+      opciones.forEach((opcion) => {
+        if (opcion.checked) seleccion = opcion.value;
+      });
+
+      const feedback = document.getElementById(`feedback${index}`);
+      if (seleccion === respuestaCorrecta) {
+        feedback.innerHTML = "✓ <span class='correcto'>¡Correcto! Buen trabajo.</span>";
+        feedback.style.display = 'block';
+        respuestasCorrectas++;
+      } else if (seleccion === "") {
+        feedback.innerHTML = "⚠ <span class='incorrecto'>Por favor selecciona una respuesta.</span>";
+        feedback.style.display = 'block';
+        return;
+      } else {
+        feedback.innerHTML = `✗ <span class='incorrecto'>Incorrecto. La respuesta correcta es: ${respuestaCorrecta}</span>`;
+        feedback.style.display = 'block';
+      }
+
+      verificarCompletado();
+    }
+
+    function verificarCompletado() {
+      let todasRespondidas = true;
+      preguntas.forEach((_, i) => {
+        const opciones = document.getElementsByName(`respuesta${i}`);
+        let seleccionada = false;
+        opciones.forEach(opcion => {
+          if (opcion.checked) seleccionada = true;
+        });
+        if (!seleccionada) todasRespondidas = false;
+      });
+
+      if (todasRespondidas) {
+        mostrarResultados();
+      }
+    }
+
+    function mostrarResultados() {
+      const resultados = document.getElementById('resultados');
+      const puntuacion = document.getElementById('puntuacion');
+      const progressBar = document.getElementById('progress-bar');
+
+      const porcentaje = Math.round((respuestasCorrectas / preguntas.length) * 100);
+
+      puntuacion.textContent = `Has acertado ${respuestasCorrectas} de ${preguntas.length} preguntas (${porcentaje}%)`;
+      progressBar.style.width = `${porcentaje}%`;
+
+      if (porcentaje >= 80) {
+        progressBar.style.backgroundColor = '#27ae60';
+      } else if (porcentaje >= 50) {
+        progressBar.style.backgroundColor = '#f39c12';
+      } else {
+        progressBar.style.backgroundColor = '#e74c3c';
+      }
+
+      resultados.style.display = 'block';
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+
+    function reiniciarCuestionario() {
+      renderizarCuestionario();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    renderizarCuestionario();
+  </script>
+</body>
+</html>

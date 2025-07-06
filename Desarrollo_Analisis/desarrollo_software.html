@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desarrollo Analisis del Soft</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #34db55;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --dark-color: #34495e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 800px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 30px 0;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 10px;
+    }
+
+    .pregunta {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid var(--secondary-color);
+      transition: transform 0.3s ease;
+    }
+
+    .pregunta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .pregunta label {
+      display: block;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+
+    .opciones {
+      margin: 15px 0;
+    }
+
+    .opcion {
+      display: block;
+      margin: 10px 0;
+      padding: 10px 15px;
+      background-color: var(--light-color);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .opcion:hover {
+      background-color: #d6eaf8;
+    }
+
+    .opcion input {
+      margin-right: 10px;
+    }
+
+    .botones {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .verificar {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .verificar:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .reiniciar {
+      background-color: var(--accent-color);
+      color: white;
+      margin-top: 30px;
+    }
+
+    .reiniciar:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .feedback {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 5px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .correcto {
+      background-color: rgba(39, 174, 96, 0.1);
+      color: var(--success-color);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .incorrecto {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: var(--accent-color);
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .resultados {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: var(--light-color);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .progress-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background-color: var(--success-color);
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .volver-menu {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 25px;
+      background-color: var(--dark-color);
+      color: white;
+      border-radius: 5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .volver-menu:hover {
+      background-color: #2c3e50;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 95%;
+        padding: 15px;
+      }
+
+      .pregunta {
+        padding: 15px;
+      }
+
+      button {
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Desarrollo Analisis del Soft</h1>
+    <form id="cuestionario"></form>
+
+    <button class="reiniciar" onclick="reiniciarCuestionario()">Reiniciar Cuestionario</button>
+
+    <div class="resultados" id="resultados">
+      <h2>Resultados</h2>
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <p id="puntuacion"></p>
+    </div>
+
+    <!-- Botón de volver al menú principal -->
+    <div class="botones">
+      <a href="../index.html" class="volver-menu">← Volver al Menú Principal</a>
+    </div>
+  </div>
+
+  <script>
+    const preguntas = [
+
+        ["Uno de los principios de usabilidad y accesibilidad es la visibilidad del estado del sistema, seleccione ejemplos de este principio", "Barras de carga, los Breadcrumbs, Los indicadores de los procesos de compra", ["Botón de deshacer, dar la posibilidad de editar un perfil personal", "FAQs, El icono de la interrogación", "Minitours, comprobación de campos de formularios en tiempo real", "Barras de carga, los Breadcrumbs, Los indicadores de los procesos de compra"]],
+        ["La aplicación de editor de textos Word utiliza botones diseñados con iconos que son fácilmente reconocibles, esto es una característica de principio de usabilidad:", "Reconocimiento en vez de recuerdo", ["Recuperación y prevención de errores", "Visibilidad del estado del sistema", "Reconocimiento en vez de recuerdo", "Diseño visual, minimalista y estético"]],
+        ["Hace referencia a la parte visual de una aplicación de software, a la disposición de todos los elementos con los que el usuario va a interactuar con la aplicación.", "diseño UI (User Interface)", ["diseño IxD (Interaction Design)", "diseño de navegación", "diseño UX (User eXperience)", "diseño UI (User Interface)"]],
+        ["Está enérgicamente unido al diseño UX (User eXperience), siendo el estudio de las interacciones que realiza el usuario en una aplicación de software y su dispositivo como por ejemplo: uso de teclado, dispositivo táctil, tiempos invertidos en hacer clic, en ampliar una sección, etc.", "diseño IxD (Interaction Design)", ["diseño IxD (Interaction Design)", "diseño de navegación", "diseño UX (User eXperience)", "diseño UI (User Interface)"]],
+        ["Uno de los sistemas de evaluación de la usabilidad llamados de 'inspección', se encuentra la evaluación……………… que consiste en que determinados evaluadores revisan la interfaz siguiendo unos principios de usabilidad reconocidos. La revisión se realiza de manera individual y asumiendo el papel de usuario.", "Heurística", ["Cognitiva", "Observación de campo", "Heurística", "Focus group"]],
+        ["¿Cuáles de los siguientes son objetivos de la web relacionados con la usabilidad?", "Facilitar la navegación de los usuarios en la web", ["Conseguir que la información relevante esté colocada en la página principal", "Incrementar los ingresos del usuario", "Facilitar la navegación de los usuarios en la web", "Conseguir que los usuarios puedan comunicarse con el diseñador de la interfaz"]],
+        ["¿Cuál de los siguientes son métodos para analizar la usabilidad de una interfaz?", "La evaluación heurística a cargo de una persona con experiencia en usabilidad", ["La evaluación heurística a cargo de una persona con experiencia en usabilidad", "Un compilador específico para el ámbito visual", "Una encuesta entre la población antes de divulgar la página", "Pensando en voz baja"]],
+        ["Son reglas que sirven para limitar las acciones que el sistema o los usuarios deben realizar. Se les conoce como:", "Restricciones", ["Inferencias", "Hechos", "Validaciones", "Restricciones"]],
+        ["Con el fin de alcanzar la eficiencia en una aplicación web y la satisfacción del usuario se debe tomar en consideración para la evaluación los siguientes atributos:", "Seguridad, usabilidad, navegabilidad", ["Infraestructura, usabilidad", "Navegabilidad, infraestructura", "Seguridad, usabilidad, navegabilidad", "Usabilidad, diseño, tiempo"]],
+        ["¿Qué guía de estilo para la Web explica sobre la navegación con teclado y otras características de las interfaces de usuario a fin de que se beneficien a usuarios con discapacidades?", "W3C- 'Web Content Accessibility Guidelines (WCAG)'", ["W3C- 'Web Content Accessibility Guidelines (WCAG)'", "W3C- 'Authoring Tool Accessibility Guidelines (ATAG)'", "W3C- 'User Agent Accessibility Guidelines (UAAG)'", "W3C- 'User Agent Accessibility Guidelines (UAAG)'"]],
+        ["En el tema de evaluación de usabilidad. Informa el tiempo de renderización de la imagen, el bloque de texto o el video más grandes que se pueden ver en el viewport, en relación con el momento en que el usuario navegó a la página por primera vez.", "Largest Contentful Paint (LCP)", ["Interaction to Next Paint (INP)", "Largest Contentful Paint (LCP)", "First Contentful Paint (FCP)", "Time to First Byte (TTFB)"]],
+        ["Para proporcionar una buena experiencia del usuario, los sitios web deben cumplir por tener una primera pintura de contenido de 1.8 segundos o menos, a fin de alcanzar este objetivo para la mayoría de los usuarios, un buen umbral para medir es el percentil 75 de las cargas de páginas, segmentadas entre los dispositivos móviles y las computadoras de escritorio. Seleccione a qué métrica de sitio web corresponde", "First Contentful Paint (FCP)", ["Interaction to Next Paint (INP)", "Largest Contentful Paint (LCP)", "First Contentful Paint (FCP)", "Time to First Byte (TTFB)"]],
+        ["Tomando como referencia el ejemplo: Tres usuarios diferentes realizan la misma tarea. Dos lograron completar en un tiempo considerable (2,3 segundos, respectivamente), mientras que el tercer usuario se demoró 7 segundos y no la terminó, esto es un ejemplo de métrica de:", "Eficiencia", ["Eficiencia", "Facilidad de uso", "Eficacia", "Eficiencia y Eficacia"]],
+        ["El método de evaluación por Inspección de estándares se realiza por medio de un experto en un estándar que puede ser de facto o de iure de la interfaz. El experto realiza una inspección minuciosa a la interfaz para comprobar que cumple en todo momento y globalmente todos los puntos definidos en el estándar. ¿En qué fases se aplica este método?", "En fases avanzadas del desarrollo, pruebas, e implantación.", ["En fases tempranas del desarrollo", "En todas las fases de desarrollo", "En fases avanzadas del desarrollo, pruebas, e implantación.", "En la fase de análisis de requisitos"]],
+        ["Seleccione los principios importantes de la experiencia de usuario (UX) en aplicaciones de realidad aumentada (AR)", "Persistencia espacial, Interacción natural", ["Persistencia espacial, Interacción natural", "Objetos virtuales, escenario virtual", "Objetos reales, escenario real", "Lenguaje natural, manipulación directa"]],
+        ["¿Qué es un proceso de software?", "Una serie de actividades relacionadas que conducen a la elaboración de un producto de software.", ["Un conjunto de herramientas para diseñar interfaces de usuario.", "Una serie de actividades relacionadas que conducen a la elaboración de un producto de software.", "Un lenguaje de programación específico para desarrollo web.", "Un modelo matemático para verificar código."]],
+        ["¿Cuál de las siguientes NO es una actividad fundamental del proceso de software?", "Publicidad del software.", ["Especificación del software.", "Diseño e implementación.", "Validación del software.", "Publicidad del software."]],
+        ["¿Qué modelo de proceso de software sigue un enfoque lineal y secuencial?", "Modelo en cascada.", ["Modelo evolutivo.", "Modelo en cascada.", "Modelo incremental.", "Modelo orientado a aspectos."]],
+        ["¿Qué nivel de madurez en CMMI-SW se caracteriza por procesos documentados y estandarizados?", "Nivel 3: Definido.", ["Nivel 1: Inicial.", "Nivel 2: Repetible.", "Nivel 3: Definido.", "Nivel 5: Optimizado."]],
+        ["¿Qué metodología ágil se basa en sprints y reuniones diarias llamadas 'Daily Scrum'?", "Scrum.", ["XP (Programación Extrema).", "Scrum.", "AUP (Agile Unified Process).", "DevOps."]],
+        ["¿Cuál es el objetivo principal de la fase de validación en el desarrollo de software?", "Verificar que el software cumple con las necesidades del cliente.", ["Asegurar que el código cumple con las especificaciones técnicas.", "Verificar que el software cumple con las necesidades del cliente.", "Optimizar el rendimiento del software.", "Documentar el proceso de desarrollo."]],
+        ["¿Qué técnica de priorización de requisitos clasifica las necesidades en 'Imprescindibles', 'Deberían', 'Podrían' y 'No'?", "MoSCoW.", ["MoSCoW.", "Kano.", "Eisenhower.", "100 Dólares."]],
+        ["¿Qué estándar ISO establece una arquitectura de alto nivel del ciclo de vida del software?", "ISO/IEC 12207:2011.", ["ISO 9001.", "ISO/IEC 12207:2011.", "ISO 15504.", "ISO 27001."]],
+        ["¿Qué rol en Scrum es responsable de maximizar el valor del producto?", "Product Owner.", ["Scrum Master.", "Development Team.", "Product Owner.", "Project Manager."]],
+        ["¿Qué herramienta se utiliza para modelar y automatizar procesos de negocio?", "Bizagi.", ["Bizagi.", "Jira.", "GitHub.", "Docker."]],
+        ["¿Qué fase del modelo incremental implica la escritura del código final según los pasos de diseño?", "Implementación.", ["Análisis de Requisitos.", "Diseño y Desarrollo.", "Pruebas.", "Implementación."]],
+        ["¿Qué principio de DevOps se enfoca en mejorar la comunicación bidireccional entre compañeros de equipo?", "Aumentar los ciclos de feedback.", ["Pensamiento sistémico.", "Aumentar los ciclos de feedback.", "Cambio cultural.", "Automatización."]],
+        ["¿Qué tipo de tarea en Bizagi requiere intervención humana?", "Tarea de Usuario.", ["Tarea de Servicio.", "Tarea de Usuario.", "Tarea de Script.", "Tarea de Recepción."]],
+        ["¿Qué modelo de proceso de software es adecuado para proyectos con requisitos cambiantes y retroalimentación de usuarios?", "Modelo evolutivo.", ["Modelo en cascada.", "Modelo evolutivo.", "Modelo formal.", "Modelo lineal."]],
+        ["¿Qué técnica de gestión de riesgos combina probabilidad e impacto en un solo gráfico?", "Matriz de probabilidad e impacto.", ["Matriz de probabilidad e impacto.", "Valor monetario esperado.", "Escala cualitativa.", "MoSCoW."]],
+        ["¿Cuál es la principal función del atributo aria-label en HTML?", "Proporcionar accesibilidad mediante descripciones", ["Aplicar estilos directamente al texto", "Proporcionar accesibilidad mediante descripciones", "Aumentar el tamaño del campo de entrada", "Enlazar hojas de estilo"]],
+        ["¿Qué atributo se usa en un formulario para especificar la URL de destino?", "action", ["target", "action", "href", "method"]],
+        ["¿Qué etiqueta HTML permite definir contenido reutilizable sin mostrarlo de inmediato?", "<template>", ["<article>", "<section>", "<div>", "<template>"]],
+        ["¿Qué valor de rel impide que los motores de búsqueda sigan un enlace?", "nofollow", ["nofollow", "noindex", "external", "nofollowing"]],
+        ["¿Qué atributo permite validar un campo con expresiones regulares en HTML5?", "pattern", ["pattern", "regex", "validate", "expression"]],
+        ["¿Cuál es el propósito de la propiedad will-change en CSS?", "Optimizar el rendimiento para cambios futuros", ["Eliminar transiciones", "Optimizar el rendimiento para cambios futuros", "Ocultar elementos innecesarios", "Alinear contenido automáticamente"]],
+        ["¿Qué unidad de medida es relativa al ancho de la ventana del navegador?", "vw", ["em", "rem", "vw", "ch"]],
+        ["¿Qué propiedad evita el colapso de márgenes y permite encerrar elementos flotantes?", "overflow: hidden", ["display: block", "clear: both", "overflow: hidden", "position: relative"]],
+        ["¿Qué valor de position permite que un elemento permanezca visible durante el scroll?", "fixed", ["static", "absolute", "fixed", "relative"]],
+        ["¿Cuál es el efecto de z-index en un elemento posicionado?", "Controla el orden de apilamiento", ["Cambia el tamaño", "Ajusta la rotación", "Controla el orden de apilamiento", "Ajusta el padding"]],
+        ["¿Qué representa una Promise en JavaScript?", "Una operación asincrónica que puede completarse o fallar", ["Una función repetitiva", "Una operación asincrónica que puede completarse o fallar", "Una variable constante", "Una API externa"]],
+        ["¿Qué método convierte un objeto en una cadena JSON?", "JSON.stringify()", ["JSON.parse()", "JSON.stringify()", "toString()", "Object.toJson()"]],
+        ["¿Qué significa 'hoisting' en JavaScript?", "Elevar declaraciones al principio de su contexto", ["Eliminar variables duplicadas", "Elevar declaraciones al principio de su contexto", "Separar funciones del código", "Priorizar llamadas AJAX"]],
+        ["¿Cuál es el resultado de Array.prototype.map()?", "Un nuevo array con los resultados de la función aplicada", ["Un número", "Un nuevo array con los resultados de la función aplicada", "Un string", "Una copia del array original"]],
+        ["¿Qué hace el método bind() en una función?", "Fija el contexto this de la función", ["Elimina this", "Ejecuta la función inmediatamente", "Fija el contexto this de la función", "Clona la función"]],
+        ["¿Cuál es una característica principal de una Aplicación Web Progresiva (PWA)?", "Se comporta como una aplicación nativa", ["Solo funciona en navegadores antiguos", "No requiere conexión a Internet", "Se comporta como una aplicación nativa", "Está escrita exclusivamente en Java"]],
+        ["¿Qué tipo de peticiones permite que el navegador se comunique con el servidor sin recargar toda la página?", "Asíncronas (AJAX)", ["Síncronas", "Paralelas", "Asíncronas (AJAX)", "HTTP estándar"]],
+        ["¿Qué tipo de aplicación web se adapta automáticamente a distintos tamaños de pantalla?", "Web responsive", ["Web estática", "Web responsive", "Web monolítica", "Web FTP"]],
+        ["¿Qué estándar se utiliza comúnmente para autenticar usuarios en aplicaciones web modernas?", "OAuth", ["SMTP", "OAuth", "DNS", "REST"]],
+        ["¿Cuál es el principal enfoque del desarrollo Front-End?", "Crear la interfaz de usuario en el navegador", ["Manipular bases de datos del servidor", "Administrar el sistema operativo", "Crear la interfaz de usuario en el navegador", "Gestionar redes y puertos de la aplicación"]],
+        ["¿Cuál es una característica clave de las plantillas en desarrollo web?", "Permiten reutilizar estructuras de código", ["Son archivos de respaldo", "Sirven para validar usuarios", "Permiten reutilizar estructuras de código", "Establecen políticas de seguridad"]],
+        ["¿Qué paradigma de programación permite representar la lógica web mediante clases y objetos?", "Orientado a Objetos", ["Procedimental", "Declarativo", "Funcional", "Orientado a Objetos"]],
+        ["¿Cuál es una ventaja de utilizar el patrón MVC en aplicaciones Front-End?", "Permite separar lógica, interfaz y datos", ["Mejora la seguridad del servidor", "Aumenta el tamaño de la aplicación", "Permite separar lógica, interfaz y datos", "Requiere menos conocimientos de diseño"]],
+        ["¿Cuál es una característica fundamental de las APIs REST?", "Siguen principios de arquitectura sin estado (stateless)", ["Usan FTP como protocolo principal", "Solo funcionan con aplicaciones móviles", "Siguen principios de arquitectura sin estado (stateless)", "Están limitadas a bases de datos relacionales"]],
+        ["¿Cuál es uno de los beneficios de usar servicios web en aplicaciones Back-End?", "Facilitar la integración con otros sistemas", ["Aumentar el tamaño de los archivos", "Facilitar la integración con otros sistemas", "Eliminar la necesidad de autenticación", "Reducir la seguridad de la aplicación"]],
+        ["¿Qué significa ORM?", "Object Relational Mapping", ["Object Request Mapping", "Object Relational Mapping", "Online Resource Manager", "Object Runtime Manager"]],
+        ["¿Cuál es el lenguaje de consulta propio de Hibernate?", "HQL", ["SQL", "JPQL", "HQL", "JSON"]],
+        ["¿Qué anotación se utiliza para indicar la clase persistente en Hibernate?", "@Entity", ["@Service", "@Database", "@Entity", "@Persistence"]],
+        ["¿Qué ventaja ofrece Hibernate frente a JDBC tradicional?", "Mapeo automático entre objetos Java y tablas", ["Mayor velocidad sin conexión", "Mapeo automático entre objetos Java y tablas", "Uso exclusivo de bases de datos NoSQL", "Permite escribir consultas en JavaScript"]],
+        ["¿Qué sintaxis permite escribir HTML dentro de JavaScript en React?", "JSX", ["XML", "JSX", "TSX", "HTML5"]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor el propósito de la validación de requisitos en el ciclo de vida del software?", "Verificar que los requisitos reflejen correctamente las necesidades del cliente.", ["Asegurar que los requisitos sean técnicamente implementables.", "Confirmar que los requisitos estén escritos sin errores gramaticales.", "Verificar que los requisitos reflejen correctamente las necesidades del cliente.", "Evaluar el rendimiento del sistema en condiciones reales."]],
+        ["¿Cuál de las siguientes técnicas es más efectiva para validar requisitos ambiguos o mal entendidos?", "Revisión estructurada con stakeholders", ["Pruebas de integración", "Revisión estructurada con stakeholders", "Análisis de código fuente", "Simulación de procesos"]],
+        ["¿Qué característica distingue a un requisito validado de uno simplemente documentado?", "Ha sido revisado y aceptado por los stakeholders.", ["Está escrito en lenguaje técnico.", "Ha sido aprobado por el equipo de desarrollo.", "Ha sido revisado y aceptado por los stakeholders.", "Tiene una prueba unitaria asociada."]],
+        ["¿Cuál de los siguientes riesgos es más probable si no se realiza una validación adecuada de requisitos?", "Desarrollo de funcionalidades innecesarias", ["Aumento del rendimiento del sistema", "Reducción del tiempo de desarrollo", "Desarrollo de funcionalidades innecesarias", "Mejora en la experiencia del usuario"]],
+        ["¿Qué afirmación es más precisa respecto a la trazabilidad en la validación de requisitos?", "Permite verificar que cada requisito tiene una fuente y una prueba asociada.", ["Solo aplica a requisitos funcionales.", "Es útil únicamente en fases de prueba.", "Permite verificar que cada requisito tiene una fuente y una prueba asociada.", "Es responsabilidad exclusiva del equipo de QA."]],
+        ["¿Cuál es la forma más adecuada de documentar los requisitos de software en un proyecto profesional?", "Utilizar un documento estructurado como el SRS (Software Requirements Specification).", ["Escribirlos en correos electrónicos entre el cliente y el desarrollador.", "Utilizar un documento estructurado como el SRS (Software Requirements Specification).", "Incluirlos como comentarios dentro del código fuente.", "Discutirlos verbalmente en reuniones sin dejar registro."]],
+        ["¿Qué impacto tiene la priorización de requisitos en el desarrollo del software?", "Permite enfocar los recursos en funcionalidades de mayor valor para el negocio.", ["Reduce la necesidad de pruebas de calidad.", "Permite enfocar los recursos en funcionalidades de mayor valor para el negocio.", "Elimina la necesidad de reuniones con stakeholders.", "Aumenta la complejidad del diseño arquitectónico."]],
+        ["¿Cuál es la forma más efectiva de priorizar los requisitos de software en un proyecto con recursos limitados y múltiples stakeholders?", "Aplicar técnicas como MoSCoW o análisis de valor-negocio vs. esfuerzo.", ["Ordenarlos alfabéticamente para facilitar su búsqueda.", "Asignarles un número aleatorio y desarrollarlos en ese orden.", "Aplicar técnicas como MoSCoW o análisis de valor-negocio vs. esfuerzo.", "Priorizar únicamente los requisitos propuestos por el equipo técnico."]],
+        ["¿Qué es la trazabilidad de los requisitos y por qué es importante?", "Es la capacidad de seguir el rastro de cada requisito desde su origen hasta su implementación y prueba.", ["Es una técnica para medir el rendimiento del software en producción.", "Es el proceso de traducir requisitos a lenguaje de programación.", "Es la capacidad de seguir el rastro de cada requisito desde su origen hasta su implementación y prueba.", "Es una forma de documentar únicamente los requisitos funcionales."]],
+        ["¿Cómo se asegura que los requisitos se cumplen durante las pruebas de software?", "Utilizando una matriz de trazabilidad que vincule requisitos con casos de prueba.", ["Ejecutando pruebas sin documentación previa.", "Validando únicamente los requisitos funcionales.", "Utilizando una matriz de trazabilidad que vincule requisitos con casos de prueba.", "Esperando a que el cliente detecte errores en producción."]],
+        ["¿Cuál es la diferencia principal entre los requisitos funcionales y los no funcionales en el desarrollo de software?", "Los requisitos funcionales indican qué debe hacer el sistema, mientras que los no funcionales describen cómo debe hacerlo.", ["Los requisitos funcionales describen como debe comportarse el sistema ante fallos, mientras que los no funcionales son opcionales.", "Los requisitos funcionales indican qué debe hacer el sistema, mientras que los no funcionales definen las funciones principales del sistema.", "Los requisitos funcionales indican qué debe hacer el sistema, mientras que los no funcionales describen cómo debe hacerlo.", "Los requisitos funcionales indican qué debe hacer el sistema, mientras que los no funcionales son opcionales y no afectan al producto final"]],
+        ["¿Cuál es el objetivo principal del análisis de requisitos en un proyecto de software?", "Identificar y documentar las necesidades del usuario", ["Diseñar la interfaz gráfica del sistema", "Codificar los módulos principales", "Identificar y documentar las necesidades del usuario", "Estimar el presupuesto del proyecto"]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor un requisito no funcional?", "El sistema debe responder en menos de 2 segundos", ["El sistema debe permitir registrar nuevos usuarios", "El sistema debe responder en menos de 2 segundos", "El sistema debe permitir imprimir facturas", "El sistema debe calcular el total de ventas"]],
+        ["¿Qué técnica es más adecuada para descubrir requisitos tácitos o no expresados directamente por el usuario?", "Observación", ["Reunión JAD", "Encuestas", "Observación", "Entrevistas"]],
+        ["¿Cuál es una ventaja clave del uso de casos de uso en el análisis de requisitos?", "Facilitan la comprensión de las interacciones entre usuarios y sistema.", ["Permiten estimar el costo del proyecto", "Describen la arquitectura del sistema", "Sustituyen completamente la documentación técnica", "Facilitan la comprensión de las interacciones entre usuarios y sistema."]],
+        ["¿Cuál es el objetivo principal del patrón Flyweight en el sistema desarrollado?", "Optimizar el uso de memoria compartiendo datos comunes", ["Almacenar los datos de los estudiantes en la nube", "Optimizar el uso de memoria compartiendo datos comunes", "Automatizar la creación de interfaces gráficas", "Gestionar los estados anteriores de los objetos"]],
+        ["¿Qué componente del patrón Memento se encarga de almacenar el historial de cambios?", "Caretaker", ["Originator", "FlyweightFactory", "Caretaker", "Editor"]],
+        ["¿Cuál es el propósito del patrón Memento en la aplicación desarrollada?", "Permitir deshacer cambios realizados por el usuario", ["Encapsular datos para el modelo", "Permitir deshacer cambios realizados por el usuario", "Centralizar la lógica de presentación", "Dividir responsabilidades entre clases"]],
+        ["¿Qué mejora se propone en relación al patrón Memento para versiones futuras del sistema?", "Añadir función de rehacer", ["Implementar validaciones lógicas", "Añadir función de rehacer", "Usar árboles binarios para búsqueda", "Migrar a arquitectura MVC"]],
+        ["¿Cómo contribuyen los patrones Flyweight y Memento al sistema en conjunto?", "Mejoran eficiencia de memoria y experiencia de usuario mediante deshacer", ["Reducen el número de líneas de código y aumentan acoplamiento", "Permiten una estructura de base de datos más compleja", "Mejoran eficiencia de memoria y experiencia de usuario mediante deshacer", "Aumentan la redundancia de datos por eficiencia computacional"]],
+        ["¿Cuál es el objetivo principal del patrón de diseño Facade?", "Simplificar el acceso a funcionalidades complejas de un subsistema", ["Facilitar la creación de objetos complejos mediante constructores", "Simplificar el acceso a funcionalidades complejas de un subsistema", "Permitir la reutilización de componentes en distintos contextos", "Establecer comunicación directa entre clases"]],
+        ["¿En qué clase del proyecto se aplica el patrón Mediator según el documento?", "EstudianteServicio.java", ["EstudianteUI.java", "EstudianteRepositorio.java", "EstudianteServicio.java", "Main.java"]],
+        ["¿Qué ventaja principal proporciona el uso del patrón Mediator?", "Facilita la reutilización de componentes desacoplándolos", ["Aumenta la dependencia entre componentes", "Permite que los componentes se comuniquen directamente", "Facilita la reutilización de componentes desacoplándolos", "Simplifica la interfaz de usuario"]],
+        ["¿Cuál es una de las responsabilidades clave de la clase EstudianteFacade.java?", "Servir como única interfaz entre la UI y la lógica del sistema", ["Validar los datos de entrada directamente", "Gestionar la base de datos", "Servir como única interfaz entre la UI y la lógica del sistema", "Implementar la lógica de negocio"]],
+        ["¿Qué sucede si se implementa mal el patrón Facade y se agregan muchas funciones no relacionadas en una sola fachada?", "La fachada se convierte en una estructura compleja difícil de mantener", ["El sistema se vuelve más desacoplado", "Se pierde la utilidad del patrón Mediator", "La fachada se convierte en una estructura compleja difícil de mantener", "Mejora el rendimiento del sistema"]],
+        ["¿Cuál es el propósito principal del patrón Adapter?", "Permitir que dos clases incompatibles trabajen juntas", ["Encapsular múltiples acciones dentro de una sola clase", "Permitir que dos clases incompatibles trabajen juntas", "Reducir el número de clases dentro del sistema", "Establecer relaciones de herencia entre clases"]],
+        ["¿Qué componente del patrón Adapter traduce la interfaz de una clase a otra compatible?", "Adapter", ["Target", "Adaptee", "Adapter", "Cliente"]],
+        ["¿Cuál de las siguientes es una ventaja del patrón Command?", "Permite encapsular una solicitud como un objeto", ["Aumenta la dependencia entre las clases", "Permite encapsular una solicitud como un objeto", "Reduce la legibilidad del sistema", "Obliga a heredar múltiples clases"]],
+        ["¿Qué desventaja se puede presentar al usar excesivamente el patrón Command?", "Incremento en la cantidad de clases", ["Reducción de extensibilidad del sistema", "Necesidad de modificar el cliente constantemente", "Incremento en la cantidad de clases", "Incapacidad de programar acciones futuras"]],
+        ["¿En qué situación se recomienda aplicar el patrón Adapter?", "Cuando se necesita usar una clase existente cuya interfaz no coincide con la esperada", ["Cuando se desea agrupar comandos relacionados", "Al procesar eventos gráficos complejos", "Cuando se necesita usar una clase existente cuya interfaz no coincide con la esperada", "Al definir algoritmos recursivos complejos"]],
+        ["¿Qué clase se utiliza para crear widgets que pueden cambiar su contenido dinámicamente?", "StatefulWidget", ["StatelessWidget", "Column", "StatefulWidget", "MaterialApp"]],
+        ["¿Qué clase en Flutter implementa Listenable y permite notificar cambios a la UI?", "ChangeNotifier", ["TextEditingController", "ChangeNotifier", "Future", "Navigator"]],
+        ["¿Qué función debe llamarse para actualizar a los listeners en un ChangeNotifier?", "notifyListeners()", ["notify()", "updateUI()", "notifyListeners()", "rebuild()"]],
+        ["¿Qué tipo de lista muestra separadores entre los elementos?", "ListView.separated", ["ListView.separated", "ListView.builder", "Column", "ReorderableListView"]],
+        ["¿Qué propiedad en Flutter indica el número de columnas en un GridView.count?", "crossAxisCount", ["columnCount", "crossAxisCount", "axisCount", "numColumns"]],
+        ["¿Qué widget se recomienda para construir listas dinámicas en Flutter?", "ListView.builder", ["ListView", "Column", "ListView.builder", "ListTile"]],
+        ["¿Cuál es un ejemplo válido de endpoint REST?", "/users/:id", ["/getUsers", "/users/:id", "get/users", "/user.get()"]],
+        ["¿Qué función se usa para convertir un JSON en un objeto en Dart?", "jsonDecode()", ["fromMap()", "jsonDecode()", "parse()", "toString()"]],
+        ["¿Qué ventaja ofrece el patrón MVVM?", "Mejora testabilidad y separación de capas", ["Aumenta el acoplamiento", "Dificulta pruebas", "Mejora testabilidad y separación de capas", "Evita el uso de widgets"]],
+        ["¿Qué tipo de gestor de estado se considera más adecuado para apps grandes y testeables?", "Riverpod", ["setState", "Provider", "Riverpod", "StatefulWidget"]],
+        ["¿Qué nombre tiene la convención de crear un objeto desde un JSON?", "fromJson", ["toJson", "jsonDecode", "fromJson", "constructor"]],
+        ["¿Cuál es el propósito de jsonEncode(contact.toJson())?", "Codificar un objeto Dart a JSON", ["Convertir JSON a objeto", "Leer un archivo", "Codificar un objeto Dart a JSON", "Enviar una imagen"]],
+        ["¿Dónde se define la interfaz de repositorio en arquitectura limpia?", "domain/", ["data/", "application/", "domain/", "presentation/"]],
+        ["¿Qué tipo de archivo se recomienda usar para separar los modelos que vienen de la API?", "models/", ["widgets/", "entities/", "models/", "providers/"]],
+        ["¿Qué propiedad del Container permite aplicar un fondo degradado?", "decoration", ["backgroundGradient", "GradientColor", "BoxDecoration.gradient", "decoration"]],
+        ["¿Cuál es uno de los principales objetivos de las pruebas de software?", "Identificar defectos y mejorar la calidad del producto.", ["Eliminar el código no utilizado.", "Demostrar que el software nunca falla.", "Identificar defectos y mejorar la calidad del producto.", "Sustituir la fase de desarrollo."]],
+        ["¿Qué relación existe entre calidad de software y pruebas?", "Las pruebas son una herramienta para evaluar y asegurar la calidad.", ["Las pruebas disminuyen la calidad del software.", "Las pruebas garantizan una interfaz atractiva.", "Las pruebas son una herramienta para evaluar y asegurar la calidad.", "Las pruebas son innecesarias si el equipo es experimentado."]],
+        ["¿Cuál de los siguientes es un principio fundamental de las pruebas de software?", "La agrupación de errores tiende a concentrarse.", ["Probar todo es posible.", "Las pruebas no deben repetirse.", "La agrupación de errores tiende a concentrarse.", "Si pasa una vez, ya no necesita volver a probarse."]],
+        ["¿Cuál es el rol principal del ingeniero de pruebas?", "Definir, ejecutar y documentar casos de prueba.", ["Diseñar arquitecturas escalables.", "Gestionar bases de datos.", "Definir, ejecutar y documentar casos de prueba.", "Implementar redes seguras."]],
+        ["¿Cuál es una diferencia clave entre verificación y validación?", "La verificación comprueba que el producto se construye correctamente.", ["La verificación implica probar el hardware únicamente.", "La validación se realiza solo con el código fuente.", "La verificación comprueba que el producto se construye correctamente.", "La validación se enfoca en fases iniciales del desarrollo."]],
+        ["¿Qué representa la técnica de caja blanca?", "Implica el conocimiento del código fuente.", ["Se basa en la exploración de la interfaz gráfica.", "Se enfoca en los requerimientos sin ver el código.", "Implica el conocimiento del código fuente.", "Se utiliza únicamente para pruebas de rendimiento."]],
+        ["¿Cuál es la causa más común de errores en el software?", "Errores humanos en el desarrollo.", ["Fallas del sistema operativo.", "Mal uso de la memoria.", "Errores humanos en el desarrollo.", "Actualizaciones automáticas."]],
+        ["¿Qué describe mejor a una revisión 'walkthrough'?", "Una revisión informal guiada por el autor del artefacto.", ["Una técnica de análisis de rendimiento.", "Una ejecución de código automatizada.", "Una revisión informal guiada por el autor del artefacto.", "Un tipo de prueba de integración."]],
+        ["¿Cuál de las siguientes afirmaciones describe una prueba de regresión?", "Valida que cambios recientes no hayan afectado funciones previas.", ["Evalúa el rendimiento con muchos usuarios concurrentes.", "Valida que cambios recientes no hayan afectado funciones previas.", "Mide la usabilidad del sistema.", "Es una prueba de aceptación temprana."]],
+        ["¿Cuál es una limitación común de las pruebas unitarias?", "No detectan fallos de integración entre módulos.", ["No pueden automatizarse.", "No se pueden ejecutar en proyectos grandes.", "No detectan fallos de integración entre módulos.", "Solo prueban aplicaciones web."]],
+        ["¿Qué caracteriza a una prueba de aceptación alfa?", "Se realiza internamente con participación del cliente.", ["Se realiza por usuarios reales en entornos reales.", "Se lleva a cabo por los desarrolladores de manera informal.", "Se ejecuta en paralelo con el desarrollo.", "Se realiza internamente con participación del cliente."]],
+        ["¿Qué se entiende por TDD (Test Driven Development)?", "Desarrollo dirigido por pruebas, donde se escriben pruebas antes del código.", ["Un enfoque donde se escribe código y luego se prueba.", "Un enfoque de pruebas no automatizadas.", "Desarrollo dirigido por pruebas, donde se escriben pruebas antes del código.", "Una técnica exclusiva de pruebas manuales."]],
+        ["¿Cuál es el propósito del plan de pruebas?", "Definir estrategia, alcance y recursos necesarios para probar.", ["Eliminar la necesidad de pruebas.", "Registrar únicamente errores encontrados.", "Definir estrategia, alcance y recursos necesarios para probar.", "Generar el informe final de pruebas."]],
+        ["¿Qué herramienta se utiliza para pruebas de carga y rendimiento?", "JMeter", ["JUnit", "Jenkins", "Postman", "JMeter"]],
+        ["¿Qué es una herramienta de gestión de pruebas?", "Un sistema para organizar y planificar actividades de prueba.", ["Un sistema de versionado de código.", "Un entorno para desarrollar aplicaciones móviles.", "Un sistema para organizar y planificar actividades de prueba.", "Una base de datos relacional."]],
+        ["En el contexto de las aplicaciones distribuidas, la comunicación entre procesos es fundamental para el funcionamiento del sistema. ¿Cuál de los siguientes es un protocolo común utilizado para la comunicación entre procesos?", "RPC", ["HTTP", "FTP", "RPC", "SMTP"]],
+        ["Las aplicaciones distribuidas tienen características específicas que las diferencian de las aplicaciones tradicionales. ¿Cuál de las siguientes es una característica clave de las aplicaciones distribuidas?", "Escalabilidad horizontal", ["Centralización de recursos", "Alta dependencia de un único servidor", "Escalabilidad horizontal", "Bajo nivel de tolerancia a fallos"]],
+        ["La sincronización en sistemas distribuidos es un desafío debido a la falta de un reloj global. ¿Cuál de los siguientes algoritmos se utiliza para sincronizar relojes en sistemas distribuidos?", "Algoritmo de Lamport", ["Algoritmo de Dijkstra", "Algoritmo de Lamport", "Algoritmo de Huffman", "Algoritmo de Bubble Sort"]],
+        ["La computación en la nube ofrece diversas ventajas para las aplicaciones distribuidas. ¿Cuál de las siguientes es una característica de la computación en la nube?", "Ofrece escalabilidad bajo demanda", ["Requiere una inversión inicial alta en infraestructura física", "Ofrece escalabilidad bajo demanda", "Limita el acceso a los recursos a una ubicación geográfica específica", "No permite el uso de virtualización"]],
+        ["La orquestación de contenedores es esencial para gestionar aplicaciones distribuidas complejas. ¿Cuál de las siguientes herramientas se utiliza comúnmente para orquestar contenedores?", "Kubernetes", ["Docker Compose", "Kubernetes", "Apache HTTP Server", "MySQL"]],
+        ["En las bases de datos distribuidas, la metodología de configuración es crucial para el rendimiento. ¿Cuál de las siguientes opciones es un enfoque común para configurar bases de datos distribuidas?", "Replicación de datos", ["Replicación de datos", "Eliminación de copias de seguridad", "Centralización de todas las consultas en un único nodo", "Desactivación de la tolerancia a fallos"]],
+        ["En el modelo cliente-servidor, el ______ solicita recursos mientras que el ______ los proporciona. Este enfoque es fundamental en las aplicaciones distribuidas.", "cliente, servidor", ["cliente, servidor", "servidor, middleware", "nodo, API", "contenedor, microservicio"]],
+        ["Para garantizar la coherencia en sistemas distribuidos, se utilizan algoritmos como la ______ de relojes y la ______ mutua, que evitan conflictos en el acceso a recursos compartidos.", "sincronización, exclusión", ["virtualización, replicación", "sincronización, exclusión", "autenticación, autorización", "encriptación, compresión"]],
+        ["En la computación en la nube, ______ permite empaquetar aplicaciones en entornos aislados, mientras que ______ gestiona la escalabilidad y despliegue de esos contenedores.", "Docker, Kubernetes", ["Docker, Kubernetes", "OAuth, API", "SOA, RPC", "Thrift, gRPC"]],
+        ["Las bases de datos distribuidas utilizan ______ para mantener copias de datos en múltiples nodos y ______ para coordinar transacciones entre ellos, asegurando consistencia.", "replicación, consenso", ["replicación, consenso", "virtualización, sincronización", "autenticación, encriptación", "APIs, WebSockets"]],
+        ["En sistemas distribuidos, el problema de la ___________ requiere algoritmos como Paxos o Raft para garantizar que todos los nodos acuerden un valor, mientras que la ___________ asegura que solo un proceso acceda a un recurso compartido a la vez.", "acuerdo distribuido, exclusión mutua", ["sincronización de relojes, replicación", "tolerancia a fallos, consistencia eventual", "exclusión mutua, elección de líder", "acuerdo distribuido, exclusión mutua"]],
+        ["En arquitecturas de microservicios, el patrón ___________ permite gestionar fallos en cascada mediante reintentos inteligentes, mientras que el ___________ facilita la comunicación asíncrona entre servicios desacoplados.", "Circuit Breaker, Message Broker", ["Circuit Breaker, Message Broker", "API Gateway, Service Mesh", "Load Balancer, Event Sourcing", "CQRS, Saga Pattern"]],
+        ["Para garantizar consistencia en bases de datos distribuidas, el teorema ___________ establece que es imposible lograr simultáneamente consistencia, disponibilidad y tolerancia a particiones, mientras que la ___________ permite replicar datos con garantías de atomicidad.", "CAP, transacción distribuida", ["CAP, transacción distribuida", "PACELC, sharding", "ACID, replicación multimaestro", "BASE, consistencia eventual"]],
+        ["En seguridad distribuida, ___________ delega autorización mediante tokens de acceso, mientras que ___________ cifra datos en tránsito para evitar interceptaciones.", "OAuth 2.0, TLS/SSL", ["OAuth 2.0, TLS/SSL", "JWT, API Key", "SAML, HTTPS", "OpenID Connect, IPsec"]],
+        ["Para sincronizar relojes en sistemas distribuidos, el algoritmo ___________ utiliza marcas lógicas para ordenar eventos, mientras que ___________ corrige desviaciones basado en servidores de tiempo externos.", "Lamport, NTP", ["Lamport, NTP", "Vectorial, PTP", "Cristian, Berkeley", "Paxos, Raft"]],
+        ["En un software bancario, se requiere garantizar confidencialidad, integridad y disponibilidad de los datos. ¿Qué estándar permite evaluar estos atributos de calidad?", "ISO/IEC 25010", ["ISO/IEC 25010", "ISO 9001", "CISQ", "ISO/IEC 29110"]],
+        ["El equipo detecta que los usuarios tienen dificultades para comprender las funciones debido a iconos poco claros y texto confuso. Quieren mejorar la ergonomía.", "ISO 9241", ["ISO 9241", "ISO/IEC 9126", "ISO/IEC 25010", "CISQ"]],
+        ["Una empresa quiere iniciar con un modelo que permita mejorar la fiabilidad y mantenibilidad de sus aplicaciones, basado en atributos de calidad interna y externa.", "ISO/IEC 9126", ["ISO/IEC 9126", "ISO 9001", "CISQ", "ISO/IEC 29110"]],
+        ["En un proyecto, no existe control formal sobre las versiones del software ni se siguen procesos estandarizados para desarrollo. ¿Qué norma puede ayudar?", "ISO/IEC 29110", ["ISO 9001", "ISO/IEC 29110", "CISQ", "ISO/IEC 25010"]],
+        ["Se desea medir la calidad del código mediante métricas automáticas para identificar defectos y vulnerabilidades.", "CISQ", ["CISQ", "ISO 9241", "ISO 9001", "ISO/IEC 29110"]],
+        ["Un software para personas con discapacidad presenta problemas de accesibilidad y navegación compleja. ¿Qué estándar ayuda a evaluar y mejorar estos aspectos?", "ISO 9241", ["ISO 9241", "ISO/IEC 9126", "ISO/IEC 25010", "CISQ"]],
+        ["Un sistema presenta errores frecuentes y mala documentación, y la empresa quiere un estándar para mejorar sus procesos y asegurar calidad desde la planificación hasta la entrega.", "ISO/IEC 29110", ["ISO/IEC 29110", "ISO 9001", "CISQ", "ISO/IEC 25010"]],
+        ["El equipo quiere evaluar el software en cuanto a su capacidad para ser probado y modificado sin afectar otras funcionalidades.", "ISO/IEC 9126", ["ISO/IEC 9126", "ISO/IEC 25010", "ISO 9001", "ISO 9241"]],
+        ["Una organización gubernamental quiere implementar un sistema de gestión de calidad con énfasis en mejora continua y satisfacción del cliente.", "ISO 9001", ["ISO 9001", "ISO/IEC 29110", "CISQ", "ISO/IEC 9126"]],
+        ["Un software de comercio electrónico debe garantizar tiempos de respuesta rápidos aún en momentos de alta demanda.", "Rendimiento", ["Usabilidad", "Rendimiento", "Seguridad", "Mantenibilidad"]],
+        ["El equipo quiere aplicar un modelo de calidad que permita distinguir entre calidad interna del código y calidad en uso del producto final.", "ISO/IEC 25010", ["ISO/IEC 25010", "ISO/IEC 29110", "CISQ", "ISO 9001"]],
+        ["En un proyecto pequeño, se busca formalizar el proceso de desarrollo con un estándar adaptado para proyectos y equipos reducidos.", "ISO/IEC 29110", ["ISO/IEC 29110", "ISO/IEC 9126", "ISO 9241", "CISQ"]],
+        ["Los usuarios reportan que el sistema tiene un diseño poco intuitivo y difícil de usar. El equipo quiere aplicar un estándar para mejorar la experiencia de usuario.", "ISO 9241", ["ISO 9241", "ISO/IEC 9126", "ISO 9001", "CISQ"]],
+        ["Para evaluar la calidad estructural del software, el equipo decide utilizar métricas automáticas que detecten vulnerabilidades y mala calidad de código.", "CISQ", ["CISQ", "ISO/IEC 29110", "ISO 9241", "ISO/IEC 25010"]],
+        ["Un equipo necesita garantizar que el software sea portable y funcione correctamente en distintos sistemas operativos.", "ISO/IEC 25010", ["ISO/IEC 25010", "ISO 9001", "CISQ", "ISO/IEC 9126"]],
+        ["El equipo quiere mejorar la eficiencia energética de una aplicación móvil para prolongar la duración de la batería en dispositivos.", "ISO/IEC 25010", ["ISO/IEC 25010", "ISO 9241", "CISQ", "ISO 9001"]],
+        ["En un proyecto, la documentación es escasa y desordenada. Se quiere un estándar para mejorar el control documental y la gestión de procesos.", "ISO 9001", ["ISO 9001", "ISO/IEC 29110", "CISQ", "ISO/IEC 9126"]],
+        ["Se desea garantizar que el software pueda ser modificado fácilmente para futuras mejoras sin afectar su funcionamiento.", "Mantenibilidad", ["Mantenibilidad", "Usabilidad", "Seguridad", "Rendimiento"]],
+        ["Un equipo quiere aplicar buenas prácticas para controlar la calidad y asegurar que el producto cumple los requisitos y expectativas del cliente.", "ISO 9001", ["ISO 9001", "ISO/IEC 29110", "CISQ", "ISO/IEC 9126"]],
+        ["En un software financiero, se detectan errores que afectan la integridad de los datos, por lo que se busca mejorar este atributo.", "Integridad", ["Confidencialidad", "Integridad", "Disponibilidad", "Usabilidad"]],
+        ["El equipo quiere evaluar la usabilidad de su aplicación enfocándose en la facilidad de aprendizaje y eficiencia para los usuarios finales.", "ISO 9241", ["ISO 9241", "ISO/IEC 25010", "ISO/IEC 29110", "CISQ"]],
+        ["Para un proyecto pequeño, se busca un estándar simple y efectivo para formalizar el ciclo de vida del software.", "ISO/IEC 29110", ["ISO/IEC 29110", "ISO 9001", "CISQ", "ISO/IEC 9126"]],
+        ["Un equipo quiere asegurar que su código sea seguro y cumpla con normas de calidad estructural y funcional.", "CISQ", ["CISQ", "ISO 9241", "ISO/IEC 25010", "ISO/IEC 29110"]],
+        ["Los usuarios reportan que la interfaz del sistema es poco accesible para personas con discapacidad visual.", "ISO 9241", ["ISO/IEC 9126", "ISO 9241", "ISO/IEC 29110", "CISQ"]],
+        ["Se busca un modelo que clasifique la calidad del software en características como fiabilidad, seguridad, eficiencia y usabilidad.", "ISO/IEC 25010", ["ISO/IEC 25010", "ISO 9001", "ISO/IEC 29110", "CISQ"]],
+        ["En un proyecto, se desea mejorar la capacidad del software para recuperarse de fallos y errores inesperados.", "Fiabilidad", ["Fiabilidad", "Usabilidad", "Mantenibilidad", "Seguridad"]],
+        ["Una empresa desea implementar controles para mejorar la calidad de sus productos y procesos, asegurando la mejora continua.", "ISO 9001", ["ISO 9001", "ISO/IEC 9126", "CISQ", "ISO/IEC 29110"]],
+        ["El equipo quiere evaluar y mejorar la eficiencia de un sistema que procesa grandes volúmenes de datos en tiempo real.", "ISO/IEC 25010", ["ISO/IEC 25010", "CISQ", "ISO 9241", "ISO/IEC 29110"]],
+        ["Un sistema presenta problemas de seguridad en la autenticación y autorización de usuarios. ¿Qué atributo de calidad debe reforzarse?", "Seguridad", ["Confidencialidad", "Integridad", "Disponibilidad", "Seguridad"]],
+        ["En una revisión final, el equipo quiere asegurar que los procesos de desarrollo sigan estándares internacionales para facilitar auditorías y certificaciones.", "ISO 9001", ["ISO/IEC 29110", "ISO 9001", "CISQ", "ISO/IEC 25010"]],
+        ["¿Qué es la seguridad del software?", "La protección del software y sus datos contra accesos no autorizados.", ["La protección del hardware contra daños físicos.", "La protección del software y sus datos contra accesos no autorizados.", "La optimización del rendimiento del software.", "La eliminación de errores en el código."]],
+        ["¿Por qué es importante la seguridad en el desarrollo de software?", "Para evitar vulnerabilidades que puedan ser explotadas por atacantes.", ["Para reducir los costos de producción.", "Para garantizar que el software sea accesible en cualquier momento.", "Para evitar vulnerabilidades que puedan ser explotadas por atacantes.", "Para mejorar la interfaz de usuario."]],
+        ["¿Qué representan las vulnerabilidades en el software?", "Debilidades que pueden ser explotadas por atacantes.", ["Errores que mejoran el rendimiento.", "Debilidades que pueden ser explotadas por atacantes.", "Características que aumentan la seguridad.", "Funciones que optimizan la compatibilidad."]],
+        ["¿Cuál es uno de los costes asociados a las vulnerabilidades del software?", "Pérdida de datos y daño a la reputación.", ["Reducción del tiempo de desarrollo.", "Pérdida de datos y daño a la reputación.", "Mejoras en la experiencia del usuario.", "Incremento en la velocidad del sistema."]],
+        ["¿Qué implica la gestión de riesgos de seguridad en el software?", "Identificar, evaluar y mitigar amenazas y vulnerabilidades.", ["Identificar, evaluar y mitigar amenazas y vulnerabilidades.", "Mejorar únicamente la interfaz de usuario.", "Incrementar la funcionalidad del software sin considerar la seguridad.", "Reducir los costos de desarrollo a toda costa."]],
+        ["¿Cuál de las siguientes propiedades NO es típica de un software seguro y resiliente?", "Vulnerabilidad a ataques conocidos.", ["Capacidad para recuperarse tras un ataque.", "Vulnerabilidad a ataques conocidos.", "Capacidad para detectar y responder a amenazas.", "Mínimos errores de seguridad."]],
+        ["¿Qué nivel de amenazas incluye riesgos a nivel de hardware?", "Amenazas relacionadas con la manipulación del hardware.", ["Solo amenazas físicas, como robos o daños.", "Amenazas relacionadas con la manipulación del hardware.", "Solo amenazas de software malicioso.", "Solo amenazas a la red."]],
+        ["¿Cuál de las siguientes es una amenaza a nivel de código?", "Inserción de código malicioso como SQL Injection.", ["Ataques de denegación de servicio.", "Manipulación de datos en la base de datos.", "Inserción de código malicioso como SQL Injection.", "Fallos en la alimentación eléctrica."]],
+        ["¿Qué aspecto de las amenazas abarca el nivel de diseño?", "La estructura y lógica del software que puede ser explotada.", ["La fabricación de componentes físicos.", "La estructura y lógica del software que puede ser explotada.", "La velocidad de procesamiento del sistema.", "La compatibilidad con otros sistemas."]],
+        ["¿Qué se busca con un plan estratégico de seguridad en el ciclo de vida del desarrollo del software (SDLC)?", "Integrar la seguridad en todas las fases del desarrollo.", ["Reducir los costos de desarrollo únicamente.", "Integrar la seguridad en todas las fases del desarrollo.", "Limitar la seguridad solo en la etapa de diseño.", "Acelerar la publicación del software sin considerar la seguridad."]],
+        ["¿Qué son las soluciones o frameworks de seguridad existentes?", "Conjuntos de herramientas y buenas prácticas para proteger el software.", ["Conjuntos de herramientas y buenas prácticas para proteger el software.", "Programas que eliminan todas las vulnerabilidades automáticamente.", "Sistemas operativos específicos para seguridad.", "Hardware especializado para protección física."]],
+        ["¿Qué se entiende por puntos de ataque en seguridad?", "Los lugares o vulnerabilidades por donde un atacante puede ingresar o causar daño.", ["Los lugares donde el software puede ser actualizado.", "Los lugares o vulnerabilidades por donde un atacante puede ingresar o causar daño.", "Las áreas donde se almacenan los datos del usuario.", "Los componentes de hardware que protegen el sistema."]],
+        ["¿Cuál es una de las amenazas a nivel de arquitectura en el software?", "Diseño de la estructura que permite ataques o fallos de seguridad.", ["Fallos de hardware en el servidor.", "Diseño de la estructura que permite ataques o fallos de seguridad.", "Mal funcionamiento del sistema operativo.", "Problemas en la red eléctrica."]],
+        ["¿Por qué es importante considerar la seguridad en todas las fases del ciclo de vida del desarrollo de software?", "Porque permite detectar y corregir vulnerabilidades antes de que sean explotadas.", ["Porque reduce la necesidad de pruebas de seguridad.", "Porque permite detectar y corregir vulnerabilidades antes de que sean explotadas.", "Porque hace que el software sea más barato de mantener.", "Porque elimina la necesidad de gestionar riesgos."]],
+        ["¿Qué papel cumplen las directrices de seguridad adicionales en el desarrollo de software?", "Proveen recomendaciones para ampliar la protección contra amenazas específicas.", ["Mejoran la interfaz gráfica del software.", "Proveen recomendaciones para ampliar la protección contra amenazas específicas.", "Eliminar los requisitos funcionales del sistema.", "Reducir el tamaño del código."]],
+        ["¿Qué es SOA?", "Arquitectura Orientada a Servicios", ["Sistema Operativo Avanzado", "Arquitectura Orientada a Servicios", "Sistema de Optimización Automatizado", "Solución Ofimática Avanzada"]],
+        ["¿Cuál es el componente clave de SOA que define las interfaces de servicio?", "WSDL (Web Services Description Language)", ["WSDL (Web Services Description Language)", "XML (eXtensible Markup Language)", "SOAP (Simple Object Access Protocol)", "REST (Representational State Transfer)"]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor la modularidad en SOA?", "Los servicios están débilmente acoplados entre sí.", ["Los servicios están fuertemente acoplados entre sí.", "Los servicios están débilmente acoplados entre sí.", "No se utiliza la modularidad en SOA.", "Los servicios no se pueden reutilizar."]],
+        ["¿Cuál es el protocolo más comúnmente utilizado en SOA para la comunicación entre servicios?", "HTTP (Hypertext Transfer Protocol)", ["HTTP (Hypertext Transfer Protocol)", "FTP (File Transfer Protocol)", "TCP (Transmission Control Protocol)", "UDP (User Datagram Protocol)"]],
+        ["¿Cuál de las siguientes opciones describe mejor la Arquitectura Orientada a Servicios (SOA)?", "Una arquitectura de software", ["Un paradigma de programación", "Una técnica de diseño gráfico", "Una arquitectura de software", "Un sistema operativo"]],
+        ["¿Cuál de los siguientes componentes es fundamental en una arquitectura SOA?", "Servicio web", ["Base de datos", "Cliente web", "Servicio web", "Lenguaje de programación"]],
+        ["¿Cuál de las siguientes afirmaciones es cierta acerca de los servicios en una arquitectura SOA?", "Los servicios deben ser independientes y autónomos.", ["Los servicios solo pueden ser desarrollados en lenguajes de programación específicos.", "Los servicios deben estar físicamente ubicados en el mismo servidor.", "Los servicios deben ser independientes y autónomos.", "Los servicios no pueden ser reutilizados en diferentes aplicaciones."]],
+        ["¿Cuál de las siguientes opciones describe mejor un contrato de servicio en una arquitectura SOA?", "Una descripción formal de la interfaz y los requisitos de un servicio.", ["Un acuerdo legal entre el proveedor y el consumidor de servicios.", "Un documento técnico detallando el funcionamiento interno de un servicio.", "Una descripción formal de la interfaz y los requisitos de un servicio.", "Un resumen de las métricas de rendimiento de un servicio."]],
+        ["¿Cuál de las siguientes opciones describe mejor la Arquitectura Orientada a Servicios (SOA)?", "Un enfoque para el diseño de software basado en servicios independientes y reutilizables.", ["Un paradigma de programación.", "Una metodología de desarrollo ágil.", "Un enfoque para el diseño de software basado en servicios independientes y reutilizables.", "Un estándar de codificación para aplicaciones web."]],
+        ["¿Cuál de las siguientes tecnologías es fundamental para implementar una arquitectura SOA?", "Servicios web", ["Base de datos relacional.", "Servidores web.", "Servicios web.", "Protocolo HTTP."]],
+        ["¿Cuál de las siguientes características es típica de una arquitectura SOA?", "Alta cohesión dentro de los servicios.", ["Acoplamiento fuerte entre componentes.", "Comunicación síncrona exclusivamente.", "Alta cohesión dentro de los servicios.", "Monolitos como estilo de implementación."]],
+        ["¿Cuál de las siguientes opciones describe mejor el concepto de contrato en una arquitectura SOA?", "Un documento técnico que describe las especificaciones de un servicio.", ["Un acuerdo legal entre dos empresas.", "Un documento técnico que describe las especificaciones de un servicio.", "Una interfaz de usuario para interactuar con un servicio.", "Una conexión de red establecida entre dos sistemas."]],
+        ["¿Cuál de las siguientes opciones describe mejor la Arquitectura Orientada a Servicios (SOA)?", "Un enfoque para el diseño de sistemas de software", ["Un lenguaje de programación", "Un sistema operativo", "Un enfoque para el diseño de sistemas de software", "Una tecnología de seguridad"]],
+        ["¿Cuál de los siguientes componentes es fundamental en una arquitectura SOA?", "Servicios web", ["Servidores de bases de datos", "Servicios web", "Sistemas operativos", "Lenguajes de programación"]],
+        ["¿Cuál de los siguientes protocolos se utiliza comúnmente en una arquitectura SOA para la comunicación entre servicios?", "HTTP", ["HTTP", "FTP", "DNS", "SSH"]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor un servicio en una arquitectura SOA?", "Es una unidad lógica de funcionalidad independiente y autónoma.", ["Es un módulo de software que se ejecuta en un solo servidor.", "Es una función o método dentro de un programa monolítico.", "Es una unidad lógica de funcionalidad independiente y autónoma.", "Es un componente físico de hardware."]],
+        ["¿Qué es SOA?", "Un enfoque para el diseño de sistemas de software.", ["Un lenguaje de programación.", "Una metodología de desarrollo de software.", "Un enfoque para el diseño de sistemas de software.", "Un sistema operativo."]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor un servicio en SOA?", "Un componente de software que realiza una función específica.", ["Un componente de software que realiza una función específica.", "Una conexión de red entre sistemas distribuidos.", "Un archivo de configuración utilizado en el desarrollo de software.", "Un sistema operativo virtualizado."]],
+        ["¿Qué protocolo se utiliza comúnmente para la comunicación entre servicios en SOA?", "HTTP", ["HTTP", "FTP", "SMTP", "Telnet"]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor un contrato de servicio en SOA?", "Una especificación técnica que define cómo interactuar con un servicio.", ["Un acuerdo legal entre dos organizaciones.", "Una especificación técnica que define cómo interactuar con un servicio.", "Un documento de diseño de software.", "Una licencia de software."]],
+        ["¿Cuál de los siguientes enunciados describe mejor la reutilización en SOA?", "La capacidad de utilizar un servicio en diferentes aplicaciones.", ["La capacidad de ejecutar múltiples servicios en paralelo.", "El proceso de compartir código fuente entre varios proyectos de software.", "La capacidad de utilizar un servicio en diferentes aplicaciones.", "La implementación de servicios independientes en un único sistema."]],
+        ["¿Qué es un ESB (Enterprise Service Bus)?", "Una tecnología para la integración de sistemas en SOA.", ["Una base de datos empresarial.", "Una tecnología para la integración de sistemas en SOA.", "Un lenguaje de programación utilizado en SOA.", "Un modelo de seguridad utilizado en SOA."]],
+        ["¿Cuál de las siguientes características NO es típica de una arquitectura SOA?", "Dependencia de plataforma específica.", ["Desacoplamiento entre servicios.", "Reutilización de servicios.", "Dependencia de plataforma específica.", "Composición de servicios."]],
+        ["¿Qué es un contrato WSDL en SOA?", "Un documento de texto que describe un servicio web.", ["Un documento de texto que describe un servicio web.", "Una interfaz gráfica para diseñar servicios en SOA.", "Un lenguaje de programación utilizado para desarrollar servicios en SOA.", "Una especificación de seguridad utilizada en SOA."]],
+        ["¿Cuál de las siguientes tecnologías es ampliamente utilizada para implementar servicios en SOA?", "XML", ["HTML", "XML", "JavaScript", "CSS"]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor el principio de 'granularidad' en SOA?", "El nivel de detalle o la funcionalidad encapsulada en un servicio.", ["La capacidad de un servicio para procesar grandes volúmenes de datos.", "La forma en que se implementa un servicio en un sistema operativo específico.", "El nivel de detalle o la funcionalidad encapsulada en un servicio.", "La ubicación geográfica de los servidores en una arquitectura distribuida."]],
+        ["¿Cuál de los siguientes estándares se utiliza para la seguridad en SOA?", "SSL (Secure Socket Layer)", ["SSL (Secure Socket Layer)", "HTML (Hypertext Markup Language)", "TCP/IP (Transmission Control Protocol/Internet Protocol)", "SQL (Structured Query Language)"]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor un 'servicio compuesto' en SOA?", "Un servicio que contiene múltiples funcionalidades encapsuladas.", ["Un servicio que no se puede reutilizar en otras aplicaciones.", "Un servicio que contiene múltiples funcionalidades encapsuladas.", "Un servicio que solo puede ser accedido a través de una red privada.", "Un servicio que utiliza una tecnología de comunicación obsoleta."]],
+        ["¿Qué es la orquestación en SOA?", "El proceso de combinar servicios para construir una aplicación completa.", ["El proceso de combinar servicios para construir una aplicación completa.", "La comunicación directa entre servicios sin intervención de una capa adicional.", "La migración de servicios a una nueva infraestructura.", "La validación de datos en la capa de presentación."]],
+        ["¿Cuál de los siguientes estándares se utiliza comúnmente para el intercambio de mensajes en SOA?", "SOAP (Simple Object Access Protocol)", ["SOAP (Simple Object Access Protocol)", "JSON (JavaScript Object Notation)", "CSV (Comma-Separated Values)", "BMP (Binary Message Protocol)"]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor un 'bus de servicios' en SOA?", "Un componente de software que facilita la comunicación y la coordinación entre servicios.", ["Una infraestructura de hardware utilizada para ejecutar servicios en paralelo.", "Un protocolo de comunicación utilizado para la interacción entre servicios.", "Un componente de software que facilita la comunicación y la coordinación entre servicios.", "Una base de datos utilizada para almacenar información sobre los servicios disponibles."]],
+        ["¿Cuál de las siguientes opciones describe mejor la 'distribución' en SOA?", "El proceso de dividir una aplicación en múltiples servicios independientes.", ["La ubicación geográfica de los servidores que ejecutan los servicios.", "El proceso de dividir una aplicación en múltiples servicios independientes.", "La comunicación directa entre servicios en una red local.", "El número de usuarios que acceden a un servicio en un momento dado."]],
+        ["¿Cuál de los siguientes enfoques es esencial en una arquitectura SOA para garantizar la interoperabilidad entre diferentes servicios?", "Implementación de contratos de servicios bien definidos.", ["Uso exclusivo de estándares propietarios.", "Implementación de contratos de servicios bien definidos.", "Dependencia de una plataforma de software específica.", "Centralización de todos los servicios en un único servidor."]],
+        ["¿Cuál de las siguientes opciones describe mejor un 'servicio web' en SOA?", "Un servicio que utiliza los estándares de la web, como HTTP, XML y SOAP, para la comunicación.", ["Un servicio que solo puede ser accedido a través de una red privada.", "Un servicio que utiliza exclusivamente el protocolo FTP (File Transfer Protocol) para la comunicación.", "Un servicio que utiliza los estándares de la web, como HTTP, XML y SOAP, para la comunicación.", "Un servicio que solo puede ser invocado por aplicaciones desarrolladas en un lenguaje de programación específico."]],
+        ["¿Cuál de las siguientes opciones describe mejor el concepto de 'descubrimiento de servicios' en SOA?", "La búsqueda y recuperación de información sobre servicios disponibles en un entorno SOA.", ["El proceso de encontrar nuevos servicios en Internet.", "La capacidad de un servicio para adaptarse automáticamente a diferentes entornos.", "La búsqueda y recuperación de información sobre servicios disponibles en un entorno SOA.", "El proceso de evaluar la calidad y el rendimiento de un servicio."]],
+        ["¿Cuál de las siguientes opciones describe mejor la 'gestión de servicios' en SOA?", "El proceso de supervisar, administrar y controlar el ciclo de vida de los servicios en una arquitectura SOA.", ["La implementación de servicios sin supervisión o control.", "La capacidad de un servicio para ejecutarse en diferentes plataformas.", "El proceso de supervisar, administrar y controlar el ciclo de vida de los servicios en una arquitectura SOA.", "La creación de servicios sin la necesidad de utilizar estándares específicos."]],
+        ["La tecnología de exposición de 'Web Services' implica la creación de un conjunto de clases que son las encargadas de intermediar la petición con la invocación del servicio. ¿Qué patrón de diseño sigue la implementación de estas clases intermediarias?", "Proxy", ["Proxy", "Facade", "Composite", "Decorator"]],
+        ["¿De qué se ocupa la arquitectura de software?", "Diseño Preliminar o de Alto Nivel", ["Diseño Preliminar o de Alto Nivel", "Diseño detallado", "Diseño de Algoritmos", "Diseño de estructuras de datos"]],
+        ["El estándar UDDI de los Servicios Web de tipo SOAP se utiliza para.", "Crear un directorio de servicios Web que pueden ser invocados por terceros", ["Definir los mensajes de intercambio de datos", "Definir la estructura de un Servicio Web", "Crear un directorio de servicios Web que pueden ser invocados por terceros", "Definir un esquema de seguridad para el intercambio de datos"]],
+        ["En que sección de un archivo WSDL se identifica las operaciones que expone un servicio Web.", "PortType", ["Definitions", "Message", "PortType", "Binding"]],
+        ["Cuál de los siguientes métodos HTTP se debe utilizar en una invocación REST para obtener recursos sin realizar ninguna modificación asociada a la invocación.", "GET", ["GET", "PUT", "POST", "DELETE"]],
+        ["Cuál de las siguientes representaciones de mensajes NO es soportada por los servicios REST", "BINARIO", ["TEXTO", "BINARIO", "XML", "JSON"]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor el propósito principal de SOA?", "Permitir la interoperabilidad entre sistemas heterogéneos.", ["Facilitar la comunicación entre dispositivos IoT (Internet of Things, Internet de las Cosas).", "Permitir la interoperabilidad entre sistemas heterogéneos.", "Mejorar la seguridad en las transacciones electrónicas.", "Optimizar el rendimiento de los servidores web."]],
+        ["¿Cuál de las siguientes tecnologías es fundamental para implementar una arquitectura SOA?", "Lenguaje de marcado extensible (XML).", ["Protocolo de transferencia de hipertexto (HTTP).", "Lenguaje de marcado extensible (XML).", "Sistema de gestión de bases de datos relacionales (RDBMS).", "Red de área local (LAN)."]],
+        ["¿Cuál de las siguientes características es esencial para un servicio en una arquitectura SOA?", "Exposición de una interfaz bien definida.", ["Acoplamiento estrecho con otros servicios.", "Dependencia de una plataforma de desarrollo específica.", "Exposición de una interfaz bien definida.", "Comunicación directa con la base de datos."]],
+        ["¿Cuál de las siguientes ventajas es típicamente asociada con la implementación de una arquitectura SOA?", "Mayor reutilización de servicios y componentes.", ["Mayor complejidad en el desarrollo de aplicaciones.", "Menor flexibilidad en la adaptación a cambios en los requisitos.", "Mayor reutilización de servicios y componentes.", "Menor escalabilidad de los sistemas."]],
+        ["¿Qué representa la sigla 'SOA'?", "Servicio Orientado a la Arquitectura.", ["Servicio Orientado a la Arquitectura.", "Servicio de Organización Avanzada.", "Sistema Operativo Asincrónico.", "Sistema de Orientación Avanzada."]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor un servicio en SOA?", "Un módulo de software que realiza una tarea específica y se comunica con otros servicios mediante llamadas a funciones.", ["Un módulo de software que realiza una tarea específica y se comunica con otros servicios mediante llamadas a funciones.", "Una base de datos centralizada que almacena información de todos los usuarios.", "Un servidor web que proporciona acceso a sitios de comercio electrónico.", "Un dispositivo de hardware utilizado para almacenar y procesar datos."]],
+        ["¿Cuál de los siguientes protocolos es ampliamente utilizado en SOA para la comunicación entre servicios?", "HTTP (Protocolo de Transferencia de Hipertexto).", ["HTTP (Protocolo de Transferencia de Hipertexto).", "FTP (Protocolo de Transferencia de Archivos).", "SMTP (Protocolo Simple de Transferencia de Correo).", "SNMP (Protocolo Simple de Administración de Red)."]],
+        ["¿Cuál de las siguientes características NO es una ventaja de SOA?", "Mejora en el rendimiento de la red.", ["Reutilización de servicios.", "Flexibilidad y adaptabilidad a cambios.", "Mejora en el rendimiento de la red.", "Interoperabilidad entre sistemas heterogéneos."]],
+        ["¿Qué es el software según el IEEE?", "El conjunto de programas, procedimientos, reglas, documentación y datos asociados a un sistema de computación.", ["Un conjunto de componentes físicos de un computador.", "El conjunto de programas, procedimientos, reglas, documentación y datos asociados a un sistema de computación.", "Solo los programas ejecutables sin documentación.", "Un lenguaje de programación específico."]],
+        ["¿Cuál es el objetivo principal de un proceso de software efectivo?", "Incrementar la productividad mediante estandarización, reuso y consistencia.", ["Reducir la necesidad de documentación.", "Incrementar la productividad mediante estandarización, reuso y consistencia.", "Eliminar la participación del cliente en el desarrollo.", "Disminuir el uso de herramientas tecnológicas."]],
+        ["¿Qué documento se genera como resultado del análisis de requisitos?", "Especificación de Requerimientos del Sistema (ERS).", ["Diagrama de flujo.", "Especificación de Requerimientos del Sistema (ERS).", "Manual de usuario.", "Código fuente preliminar."]],
+        ["¿Qué modelo de proceso de software se caracteriza por su enfoque secuencial y lineal?", "Modelo en cascada.", ["Modelo en espiral.", "Modelo en cascada.", "Modelo evolutivo.", "Modelo ágil."]],
+        ["¿Cuál es una desventaja del modelo en cascada?", "Resultados visibles hasta etapas avanzadas del proyecto.", ["Alta adaptabilidad a cambios en los requisitos.", "Resultados visibles hasta etapas avanzadas del proyecto.", "Uso exclusivo en proyectos pequeños.", "Falta de documentación."]],
+        ["¿Qué tipo de prototipo se descarta después de su uso en la exploración de requisitos?", "Prototipo desechable.", ["Prototipo evolutivo.", "Prototipo desechable.", "Prototipo operativo.", "Prototipo incremental."]],
+        ["¿Qué elemento introduce el modelo en espiral que no está presente en el modelo en cascada?", "Análisis de riesgos.", ["Documentación detallada.", "Análisis de riesgos.", "Programación en parejas.", "Pruebas unitarias."]],
+        ["¿Qué norma ISO está relacionada con los procesos del ciclo de vida del software?", "ISO/IEC 12207.", ["ISO 9001.", "ISO/IEC 12207.", "ISO 27000.", "ISO 20000."]],
+        ["¿Cuál es el enfoque principal de la Programación Extrema (XP)?", "Adaptación a requisitos imprecisos y cambiantes.", ["Documentación exhaustiva.", "Adaptación a requisitos imprecisos y cambiantes.", "Uso exclusivo de modelos lineales.", "Eliminación de pruebas automatizadas."]],
+        ["¿Qué característica define a los procesos ágiles?", "Desarrollo incremental y adaptación continua.", ["Énfasis en la planificación rígida y documentación detallada.", "Equipos grandes y jerarquizados.", "Desarrollo incremental y adaptación continua.", "Uso exclusivo de prototipos desechables."]],
+        ["¿Qué actividad NO forma parte del Proceso Unificado (RUP)?", "Mantenimiento predictivo.", ["Inicio.", "Elaboración.", "Mantenimiento predictivo.", "Transición."]],
+        ["¿Qué estándar se enfoca en la evaluación de la capacidad de los procesos de software?", "ISO/IEC 15504 (SPICE).", ["ISO/IEC 15504 (SPICE).", "ISO 9001.", "ISO 27000.", "ISO 20000."]],
+        ["¿Qué nivel de capacidad en ISO/IEC 15504 indica que un proceso está 'optimizado'?", "Nivel 5.", ["Nivel 3.", "Nivel 4.", "Nivel 5.", "Nivel 2."]],
+        ["¿Qué herramienta utiliza UWE (UML-based Web Engineering) para el desarrollo de aplicaciones web?", "Perfil UML propio y generación semiautomática mediante UWEXML.", ["Diagramas de flujo.", "Perfil UML propio y generación semiautomática mediante UWEXML.", "Prototipos en papel.", "Lenguaje de programación Python."]],
+        ["¿Cuál es el objetivo principal de PSP (Personal Software Process)?", "Mejorar el rendimiento individual mediante autoevaluación y métricas.", ["Gestionar equipos grandes.", "Mejorar el rendimiento individual mediante autoevaluación y métricas.", "Eliminar la necesidad de pruebas de software.", "Reducir la interacción con el cliente."]],
+        ["¿Cuál de estos es un beneficio en el Desarrollo Global de Software?", "Expansión Territorial y costos reducidos de salarios de países con menores sueldos mínimos.", ["Expansión Territorial y costos reducidos de salarios de países con menores sueldos mínimos.", "Disminuye en los tiempos diferenciados por la zona horaria.", "Poca gama de mano de obra adecuada en diferentes especializaciones.", "Menos acercamiento al cliente y al mercado."]],
+        ["¿Cómo definirías el Desarrollo Global de Software?", "Como el desarrollo de software separado por fronteras geográficas involucrando un estilo de tiempo real e interacción.", ["Como el nivel de educación que el equipo tiene.", "Como el desarrollo de software separado por fronteras geográficas involucrando un estilo de tiempo real e interacción.", "Como el nivel de costumbres que el equipo tiene.", "Como el nivel de comportamiento que el equipo tiene."]],
+        ["¿Cuál de estos es un problema sobre el Desarrollo Global de Software?", "Que se ha puesto más enfoque en ver los riesgos del desarrollo que en los beneficios.", ["Zonas horarios separadas causan una colaboración pobre.", "Se sobre montan las horas de trabajo en los sitios distribuidos en lugar de seguir el sol.", "Que se ha puesto más enfoque en ver los riesgos del desarrollo que en los beneficios.", "Tiempos de respuesta demorado."]],
+        ["El riesgo más visible en la compartición de mejores prácticas es:", "Que el no lograr la comunicación cara a cara inhibe la compartición de conocimiento.", ["Dificultad de conseguir personal más barato en todo el mundo.", "Gestión de mejoras de conocimiento.", "Restricciones impuestas por la dificultad de cercanía al cliente y al mercado.", "Que el no lograr la comunicación cara a cara inhibe la compartición de conocimiento."]],
+        ["El beneficio de acceder a un mayor número de empleados especializados a nivel global:", "El sueldo mínimo en otros países son más bajos que el nuestro.", ["Es que manejan el idioma y son más accesibles para trabajar remotamente.", "Atributos de Calidad del empleado son mejores que las nuestras y más cara.", "Restricciones por problemas de interculturalidad.", "El sueldo mínimo en otros países son más bajos que el nuestro."]],
+        ["¿Cuál es el objetivo más importante en el Desarrollo Global de Software?", "El tiempo de desarrollo lo hace más fácil de mercadear.", ["Requerimientos de funcionalidad.", "Requerimientos de usuario.", "Requerimientos no funcionales.", "El tiempo de desarrollo lo hace más fácil de mercadear."]],
+        ["¿Cuál es el riesgo de la reducción de costos en el Desarrollo Global de Software?", "La coordinación de los desarrolladores se complica por la distribución geográfica.", ["Especificación.", "Validación.", "La coordinación de los desarrolladores se complica por la distribución geográfica.", "Verificación."]],
+        ["El beneficio de sacar rédito por la efectividad de las zonas horarios son:", "El poder seguir el modelo sigue el sol para ganar número de horas posibles en el día.", ["Los horarios.", "El poder seguir el modelo sigue el sol para ganar número de horas posibles en el día.", "Las metodologías utilizadas.", "La coordinación."]],
+        ["¿El beneficio que se aprovecha en el desarrollo de trabajo entre sitios cruzados en equipos son?", "La posibilidad de dividir en módulos el trabajo.", ["La coordinación", "Los horarios.", "La empatía cultural.", "La posibilidad de dividir en módulos el trabajo."]],
+        ["La técnica más importante en la comunicación en el Desarrollo Global es", "la Comunicación cara a cara.", ["la Validación.", "la Verificación.", "el SDLC.", "la Comunicación cara a cara."]],
+        ["El acceso a tener una diversidad de personal calificado de varios países lleva como riesgo el", "Tener que lidiar con problemas culturales que no son previsibles.", ["Requerimientos de funcionalidad y no funcionalidad son confusos.", "Requerimientos de usuario y de stakeholder no se contemplan.", "Requerimientos no funcionales y de usabilidad no son requeridos.", "Tener que lidiar con problemas culturales que no son previsibles."]],
+        ["El acceso a tener una diversidad de personal calificado de varios países lleva como beneficio el", "El innovar y aplica mejores prácticas.", ["Requerimientos de funcionalidad son fáciles de elicitar.", "Basar en módulos el proyecto.", "El innovar y aplica mejores prácticas.", "Basar en Fases el proyecto."]],
+        ["¿Cuál de estos roles no sirve para el Desarrollo Global de Software?", "Ingeniero de requisitos.", ["Desarrollador.", "Ingeniero de requisitos.", "Coordinador.", "Jefe de Proyecto."]],
+        ["La metodología que más se adapta al Desarrollo Global de Software se le puede llamar como", "SCRUM Distribuido.", ["Cascada.", "Proceso Unificado.", "SCRUM Global.", "SCRUM Distribuido."]],
+        ["Una de las razones fundamentales del Desarrollo Global de Software es", "Estar cerca del cliente y el mercado.", ["Estar cerca del cliente y el mercado.", "Facilidad en la Verificación.", "Completar el SDLC.", "Facilidad para Gestionar los Requerimientos."]],
+        ["¿Cuál de los siguientes NO es un criterio de calidad del software según la ISO 9126-1998?", "Efectividad", ["Mantenibilidad", "Efectividad", "Usabilidad", "Portabilidad"]],
+        ["¿Qué metodología de desarrollo de software ha sido desarrollada para entregar software funcional en iteraciones cortas llamadas SPRINT?", "SCRUM", ["CASCADA", "SCRUM", "ESPIRAL", "PROTOTIPADO"]],
+        ["¿Cuál de las siguientes técnicas sirven para determinar el tamaño del software en base a los requisitos funcionales?", "PUNTOS DE FUNCIÓN", ["DIAGRAMA DE GANTT", "PUNTOS DE FUNCIÓN", "DIAGRAMA DE PERT", "ANÁLISIS DE RIESGOS"]],
+        ["¿Qué documento permite desarrollar software basado en la técnica TDD (Test Driven Development)?", "PLAN DE PRUEBAS", ["PLAN DE PRUEBAS", "ESPECIFICACIÓN DE REQUISITOS", "DIAGRAMA DE FLUJO DE DATOS", "MANUAL DE USUARIO"]],
+        ["¿Cuál de los siguientes es un producto de la fase de inicio en el Proceso Unificado de Rational (RUP)?", "Modelo de Clases", ["Plan de Pruebas", "Modelo Entidad Relación", "Caso de negocio y visión", "Modelo de Clases"]],
+        ["¿Cuál de los siguientes NO es un producto de la fase de construcción de acuerdo al Proceso Unificado de Rational (RUP)?", "Plan de desarrollo revisado", ["El producto de software integrado y corriendo", "Manuales de usuario", "Descripción del 'release' actual", "Plan de desarrollo revisado"]],
+        ["¿Cuál de las siguientes es una característica clave de las metodologías ágiles?", "Colaboración estrecha con el cliente", ["Énfasis en la documentación detallada", "Desarrollo secuencial y lineal", "Colaboración estrecha con el cliente", "Resistencia al cambio"]],
+        ["¿Qué es la gestión de la configuración en un proyecto de software?", "EL CONTROL DE CAMBIOS Y VERSIONES DEL SOFTWARE Y LA DOCUMENTACIÓN", ["LA ADMINISTRACIÓN DEL HARDWARE UTILIZADO EN EL DESARROLLO", "EL CONTROL DE CAMBIOS Y VERSIONES DEL SOFTWARE Y LA DOCUMENTACIÓN", "LA CONFIGURACIÓN DE LAS HERRAMIENTAS DE DESARROLLO", "LA GESTIÓN DE LA INFRAESTRUCTURA DE RED"]],
+        ["¿En qué métrica del tamaño del software considera la fórmula para estimación de acuerdo al modelo COCOMO?", "EN EL NÚMERO DE LÍNEAS DE CÓDIGO", ["EN UNA ESTIMACIÓN RÁPIDA Y APROXIMADA BASADA EN LA EXPERIENCIA Y LA INTUICIÓN", "EN EL CONTEO DE PUNTOS DE FUNCIÓN", "EN EL NÚMERO DE LÍNEAS DE CÓDIGO", "EN LA ESTIMACIÓN DEL ESFUERZO EN PERSONAS MES"]],
+        ["¿Cuál es el objetivo principal de una reunión de 'daily scrum' en un proyecto Agile?", "REPORTAR EL PROGRESO DEL DESARROLLO", ["PRESENTAR EL PRODUCTO FINAL AL CLIENTE", "REALIZAR LA PLANIFICACIÓN DEL SPRINT", "REPORTAR EL PROGRESO DEL DESARROLLO", "REALIZAR EL CONTROL DE CAMBIOS"]],
+        ["¿Qué es un 'sprint backlog' en Scrum?", "EL CONJUNTO DE HISTORIAS DE USUARIO SELECCIONADAS PARA UN SPRINT", ["UNA LISTA DE TODAS LAS TAREAS PENDIENTES DEL PROYECTO", "EL CONJUNTO DE HISTORIAS DE USUARIO QUE SERÁN DESARROLLADOS", "EL CONJUNTO DE HISTORIAS DE USUARIO SELECCIONADAS PARA UN SPRINT", "UN INFORME DE LOS DEFECTOS ENCONTRADOS EN EL SOFTWARE"]],
+        ["¿Cuál de las siguientes opciones describe mejor una 'historia de usuario' en el desarrollo ágil de software?", "Un relato corto que describe quien, qué y para qué se desea una característica del software", ["Un documento técnico detallado que describe los requisitos del sistema", "Un diagrama de flujo que ilustra el proceso de desarrollo", "Un relato corto que describe quien, qué y para qué se desea una característica del software", "Un conjunto de casos de prueba para verificar la funcionalidad del sistema"]],
+        ["¿Cuál de las siguientes metodologías NO se considera una metodología ágil?", "Modelo en cascada", ["Modelo en cascada", "Programación Extrema (XP)", "Scrum", "Desarrollo de Software Adaptativo (DSA)"]],
+        ["¿Cuál No es un modelo de ciclo de vida del software?", "SECUENCIAL", ["CASCADA", "ITERATIVO INCREMENTAL", "EVOLUTIVO", "SECUENCIAL"]],
+        ["¿Cuál aspecto influye para seleccionar un modelo de ciclo de vida?", "LA INCERTIDUMBRE O RIESGO DE CAMBIOS DE LOS REQUISITOS", ["EL NÚMERO DE LÍNEAS DE CÓDIGO DEL SOFTWARE", "LA METODOLOGÍA DE DESARROLLO", "LA GESTIÓN DE LA CONFIGURACIÓN", "LA INCERTIDUMBRE O RIESGO DE CAMBIOS DE LOS REQUISITOS"]]        
+    
+    ];
+
+    let respuestasCorrectas = 0;
+    const form = document.getElementById("cuestionario");
+
+    function renderizarCuestionario() {
+      respuestasCorrectas = 0;
+      form.innerHTML = '';
+
+      preguntas.forEach(([pregunta, respuestaCorrecta, opciones], i) => {
+        const preguntaElement = document.createElement('div');
+        preguntaElement.className = 'pregunta';
+        preguntaElement.innerHTML = `
+          <label>${i + 1}. ${pregunta}</label>
+          <div class="opciones">
+            ${opciones.map((opcion, j) => `
+              <label class="opcion">
+                <input type="radio" name="respuesta${i}" value="${opcion}">
+                ${opcion}
+              </label>
+            `).join('')}
+          </div>
+          <div class="botones">
+            <button type="button" class="verificar" onclick="verificarRespuesta(${i}, '${escapeHtml(respuestaCorrecta)}')">
+              Verificar
+            </button>
+          </div>
+          <div class="feedback" id="feedback${i}"></div>
+        `;
+        form.appendChild(preguntaElement);
+      });
+
+      document.getElementById('resultados').style.display = 'none';
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function verificarRespuesta(index, respuestaCorrecta) {
+      const opciones = document.getElementsByName(`respuesta${index}`);
+      let seleccion = "";
+      opciones.forEach((opcion) => {
+        if (opcion.checked) seleccion = opcion.value;
+      });
+
+      const feedback = document.getElementById(`feedback${index}`);
+      if (seleccion === respuestaCorrecta) {
+        feedback.innerHTML = "✓ <span class='correcto'>¡Correcto! Buen trabajo.</span>";
+        feedback.style.display = 'block';
+        respuestasCorrectas++;
+      } else if (seleccion === "") {
+        feedback.innerHTML = "⚠ <span class='incorrecto'>Por favor selecciona una respuesta.</span>";
+        feedback.style.display = 'block';
+        return;
+      } else {
+        feedback.innerHTML = `✗ <span class='incorrecto'>Incorrecto. La respuesta correcta es: ${respuestaCorrecta}</span>`;
+        feedback.style.display = 'block';
+      }
+
+      verificarCompletado();
+    }
+
+    function verificarCompletado() {
+      let todasRespondidas = true;
+      preguntas.forEach((_, i) => {
+        const opciones = document.getElementsByName(`respuesta${i}`);
+        let seleccionada = false;
+        opciones.forEach(opcion => {
+          if (opcion.checked) seleccionada = true;
+        });
+        if (!seleccionada) todasRespondidas = false;
+      });
+
+      if (todasRespondidas) {
+        mostrarResultados();
+      }
+    }
+
+    function mostrarResultados() {
+      const resultados = document.getElementById('resultados');
+      const puntuacion = document.getElementById('puntuacion');
+      const progressBar = document.getElementById('progress-bar');
+
+      const porcentaje = Math.round((respuestasCorrectas / preguntas.length) * 100);
+
+      puntuacion.textContent = `Has acertado ${respuestasCorrectas} de ${preguntas.length} preguntas (${porcentaje}%)`;
+      progressBar.style.width = `${porcentaje}%`;
+
+      if (porcentaje >= 80) {
+        progressBar.style.backgroundColor = '#27ae60';
+      } else if (porcentaje >= 50) {
+        progressBar.style.backgroundColor = '#f39c12';
+      } else {
+        progressBar.style.backgroundColor = '#e74c3c';
+      }
+
+      resultados.style.display = 'block';
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+
+    function reiniciarCuestionario() {
+      renderizarCuestionario();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    renderizarCuestionario();
+  </script>
+</body>
+</html>

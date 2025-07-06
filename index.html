@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menú Principal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('fondo.jpg'); /* Cambia 'fondo.jpg' por el nombre de tu imagen */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        nav {
+            background-color: rgba(168, 230, 207, 0.9); /* Verde clarito con transparencia */
+            display: flex;
+            justify-content: center;
+            padding: 15px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        nav a {
+            color: #333;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #dcedc1;
+            color: #000;
+        }
+
+        .content {
+            text-align: center;
+            padding: 80px 20px;
+            background-color: rgba(255, 255, 255, 0.85);
+            margin: 50px auto;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #2e7d32;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #444;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="Programacion/programacion.html">Programación</a>
+        <a href="Diseno_bd/diseno_bd.html">Diseño y Administración BD</a>
+        <a href="Diseño_redes/diseno_redes.html">Diseño y Administración Redes</a>
+        <a href="Desarrollo_Analisis/desarrollo_software.html">Desarrollo y Análisis de Software</a>
+        <a href="Prog_Interdisciplinario/programacion_inter.html">Proyectos Interdisciplinarios TICS</a>
+        <a href="BDD/bdd.html">BDD</a>
+        <a href="Preguntas_T/preguntas.html">Preguntas de Todo</a>
+    </nav>
+
+
+    <div class="content">
+        <h1>Bienvenido al Portal de Conocimiento</h1>
+        <p>Explora los módulos de programación, redes, base de datos y más desde el menú superior.</p>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redes</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #34db55;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --dark-color: #34495e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 800px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 30px 0;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 10px;
+    }
+
+    .pregunta {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid var(--secondary-color);
+      transition: transform 0.3s ease;
+    }
+
+    .pregunta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .pregunta label {
+      display: block;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+
+    .opciones {
+      margin: 15px 0;
+    }
+
+    .opcion {
+      display: block;
+      margin: 10px 0;
+      padding: 10px 15px;
+      background-color: var(--light-color);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .opcion:hover {
+      background-color: #d6eaf8;
+    }
+
+    .opcion input {
+      margin-right: 10px;
+    }
+
+    .botones {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .verificar {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .verificar:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .reiniciar {
+      background-color: var(--accent-color);
+      color: white;
+      margin-top: 30px;
+    }
+
+    .reiniciar:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .feedback {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 5px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .correcto {
+      background-color: rgba(39, 174, 96, 0.1);
+      color: var(--success-color);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .incorrecto {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: var(--accent-color);
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .resultados {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: var(--light-color);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .progress-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background-color: var(--success-color);
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .volver-menu {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 25px;
+      background-color: var(--dark-color);
+      color: white;
+      border-radius: 5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .volver-menu:hover {
+      background-color: #2c3e50;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 95%;
+        padding: 15px;
+      }
+
+      .pregunta {
+        padding: 15px;
+      }
+
+      button {
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Redes</h1>
+    <form id="cuestionario"></form>
+
+    <button class="reiniciar" onclick="reiniciarCuestionario()">Reiniciar Cuestionario</button>
+
+    <div class="resultados" id="resultados">
+      <h2>Resultados</h2>
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <p id="puntuacion"></p>
+    </div>
+
+    <!-- Botón de volver al menú principal -->
+    <div class="botones">
+      <a href="../index.html" class="volver-menu">← Volver al Menú Principal</a>
+    </div>
+  </div>
+
+  <script>
+    const preguntas = [
+
+        ["¿Qué tipo de red interconecta dispositivos dentro de un área geográfica pequeña, como una oficina o un edificio, y generalmente es propiedad y está administrada por una sola organización?", "LAN", ["WAN", "MAN", "LAN", "PAN"]],
+        ["En el contexto de redes inalámbricas, ¿cuál de las siguientes tecnologías utiliza ondas de radio de corto alcance para la comunicación entre dispositivos como teléfonos móviles, auriculares y teclados, típicamente dentro de un rango de 10 metros?", "Bluetooth", ["Wi-Fi", "Zigbee", "Bluetooth", "NFC"]],
+        ["¿Cuál de las siguientes afirmaciones describe mejor el propósito de una VLAN (Virtual LAN)?", "Segmentar una red física en múltiples dominios de broadcast lógicos.", ["Segmentar una red física en múltiples dominios de broadcast lógicos.", "Aumentar el ancho de banda total disponible en una red Ethernet.", "Proporcionar redundancia en enlaces de red de área amplia.", "Asignar direcciones IP públicas a dispositivos privados."]],
+        ["Un administrador de red necesita configurar un enrutamiento que no cambie a menos que sea modificado manualmente. ¿Qué tipo de enrutamiento sería el más apropiado para esta situación?", "Enrutamiento estático", ["Enrutamiento dinámico con OSPF", "Enrutamiento dinámico con EIGRP", "Enrutamiento estático", "Enrutamiento basado en políticas"]],
+        ["En el contexto de las tecnologías Ethernet, ¿cuál de las siguientes opciones ofrece una velocidad de transmisión de datos de 100 Mbps?", "Fast Ethernet", ["Ethernet estándar", "Gigabit Ethernet", "Fast Ethernet", "10 Gigabit Ethernet"]],
+        ["¿Qué clase de dirección IP, en el esquema de direccionamiento IPv4, está diseñada principalmente para redes grandes y puede tener hasta 16.777.214 hosts por red?", "Clase A", ["Clase A", "Clase B", "Clase C", "Clase D"]],
+        ["Si se tiene una red con la dirección 192.168.10.0/24 y se necesita dividirla en 4 subredes de igual tamaño utilizando FLSM (Fixed Length Subnet Mask), ¿cuál sería la nueva máscara de subred en notación CIDR?", "/26", ["/25", "/26", "/27", "/28"]],
+        ["¿Cuál es la principal ventaja de utilizar enrutamiento dinámico sobre enrutamiento estático en una red grande y compleja?", "Adaptación automática a cambios en la topología de la red.", ["Mayor seguridad de la red.", "Menor consumo de recursos del router.", "Adaptación automática a cambios en la topología de la red.", "Configuración inicial más sencilla."]],
+        ["¿Qué tecnología de red es un protocolo de conmutación de paquetes que opera en la capa de enlace de datos y fue popular para interconectar redes de área local a través de enlaces WAN, especialmente antes de la proliferación de MPLS?", "Frame Relay", ["ATM", "DSL", "Frame Relay", "ISDN"]],
+        ["Un dispositivo de red opera principalmente en la Capa 2 (Enlace de Datos) del modelo OSI y es utilizado para conectar segmentos de red, enviando tramas solo al puerto de destino correspondiente. ¿Qué tipo de dispositivo es?", "Switch", ["Router", "Hub", "Switch", "Repetidor"]],
+        ["¿Cuál de las siguientes descripciones corresponde a una red MAN (Metropolitan Area Network)?", "Una red que interconecta ciudades dentro de una región o un campus universitario grande.", ["Una red que cubre una pequeña área geográfica, como una casa o una oficina.", "Una red que abarca una gran área geográfica, como un país o continente.", "Una red que interconecta ciudades dentro de una región o un campus universitario grande.", "Una red personal para la interconexión de dispositivos cercanos."]],
+        ["En una red que utiliza el direccionamiento IPv4, ¿qué máscara de subred permite tener 62 hosts en una subred dada?", "255.255.255.192 (/26)", ["255.255.255.192 (/26)", "255.255.255.224 (/27)", "255.255.255.240 (/28)", "255.255.255.248 (/29)"]],
+        ["¿Qué característica fundamental diferencia a Gigabit Ethernet de Fast Ethernet?", "La velocidad de transmisión de datos.", ["El tipo de cableado utilizado.", "La velocidad de transmisión de datos.", "La compatibilidad con VLANs.", "La capacidad de operar en modo full-duplex."]],
+        ["Si un router recibe un paquete con una dirección IP de destino para la cual no tiene una ruta específica en su tabla de enrutamiento, ¿qué acción tomará el router si tiene una ruta por defecto configurada?", "Reenviará el paquete a la interfaz asociada con la ruta por defecto.", ["Descartará el paquete inmediatamente.", "Enviará un mensaje ICMP \"Destination Unreachable\" al origen.", "Reenviará el paquete a la interfaz asociada con la ruta por defecto.", "Intentará aprender una nueva ruta dinámicamente."]],
+        ["¿Cuál de las siguientes afirmaciones es CORRECTA sobre el direccionamiento IP en redes de computadoras?", "La máscara de subred define la porción de red y la porción de host de una dirección IP.", ["Las direcciones IP públicas son únicas dentro de una red local.", "Las direcciones IP privadas son enrutables directamente a través de Internet.", "La máscara de subred define la porción de red y la porción de host de una dirección IP.", "Cada dispositivo en una red debe tener la misma dirección IP."]],
+        ["¿Cuál es la función principal de un Sistema Operativo?", "Gestionar el hardware y proveer servicios a las aplicaciones", ["Gestionar el hardware y proveer servicios a las aplicaciones", "Desarrollar software de usuario", "Proteger la información mediante cifrado", "Realizar copias de seguridad automáticamente"]],
+        ["¿Cuál de los siguientes NO es un tipo de sistema operativo?", "Multinúcleo", ["Monousuario", "Multitarea", "Multinúcleo", "Tiempo real"]],
+        ["En la arquitectura de un sistema operativo, ¿qué componente es responsable de la comunicación entre hardware y software?", "Núcleo (Kernel)", ["Interfaz de usuario", "Núcleo (Kernel)", "Aplicaciones", "Sistema de archivos"]],
+        ["¿De los siguientes, cuál es uno de los principales principios del software libre?", "Que el código fuente esté disponible para estudiar, modificar y distribuir", ["Que sea gratuito siempre", "Que el código fuente esté disponible para estudiar, modificar y distribuir", "Que sea desarrollado por una sola empresa", "Que no permita modificaciones"]],
+        ["¿Cuál de los siguientes comandos de Linux muestra el listado de archivos en un directorio?", "ls", ["pwd", "ls", "cd", "mkdir"]],
+        ["¿Cuál es la función principal del comando ps en Linux?", "Mostrar procesos activos", ["Mostrar procesos activos", "Cambiar permisos de archivos", "Apagar el sistema", "Instalar programas"]],
+        ["¿Qué significa BCP en el contexto de sistemas operativos y seguridad?", "Business Continuity Plan", ["Backup Control Program", "Business Continuity Plan", "Block Process Control", "Binary Code Protocol"]],
+        ["¿Cuáles son los cinco estados clásicos de un proceso?", "Nuevo, listo, ejecución, bloqueado, terminado", ["Nuevo, listo, ejecución, bloqueado, terminado", "Inicio, pausa, ejecución, espera, fin", "Activo, inactivo, listo, detenido, reiniciado", "Nuevo, espera, pausa, ejecución, finalizado"]],
+        ["¿Cuál es la ventaja principal de utilizar hilos (threads) en lugar de procesos?", "Permiten compartir memoria y son más ligeros", ["Consumen más recursos", "Se ejecutan en máquinas diferentes", "Permiten compartir memoria y son más ligeros", "No permiten multitarea"]],
+        ["¿Cuál de los siguientes es un algoritmo de planificación de procesos en sistemas operativos?", "FCFS (FIRST COME, FIRST SERV)", ["FCFS (FIRST COME, FIRST SERV)", "TCP/IP", "RAID 5", "DNS"]],
+        ["En ext4, ¿qué modo de journaling garantiza la máxima integridad de datos al costo de rendimiento?", "data=journal", ["data=writeback", "data=ordered", "data=journal", "data=unordered"]],
+        ["¿Qué es un ataque de “denegación de servicio” (DoS) en redes IP?", "Interrupción del servicio para usuarios legítimos", ["Acceso no autorizado a datos", "Interrupción del servicio para usuarios legítimos", "Robo de información personal", "Instalación de malware"]],
+        ["¿Cuál es una característica principal de Kali Linux?", "Está diseñado para pruebas de penetración y auditoría de seguridad", ["Incluye más de 6000 herramientas preinstaladas para pruebas de penetración y forensia.", "Está diseñado para pruebas de penetración y auditoría de seguridad", "Es un sistema operativo para servidores web", "Es una distribución para edición de video"]],
+        ["¿Cuál es el propósito principal de OpenSSL en un entorno Linux?", "Proporcionar herramientas para cifrado y certificados digitales", ["Gestionar usuarios y grupos", "Proporcionar herramientas para cifrado y certificados digitales", "Instalar paquetes de software", "Monitorear procesos activos"]],
+        ["¿Qué efecto tiene la llamada al sistema fork() en un proceso en Linux?", "Crea un proceso hijo duplicado del proceso actual", ["Termina el proceso actual y lanza uno nuevo sin relación", "Crea un nuevo hilo dentro del mismo proceso", "Crea un proceso hijo duplicado del proceso actual", "Reemplaza el proceso actual con un nuevo programa"]],
+        ["¿Qué principio de la ciberseguridad busca evitar el acceso no autorizado a la información?", "Confidencialidad", ["Integridad", "Trazabilidad", "Confidencialidad", "Disponibilidad"]],
+        ["¿Cuál de las siguientes características asegura que los datos no han sido alterados durante su transmisión?", "Integridad", ["No repudio", "Integridad", "Disponibilidad", "Trazabilidad"]],
+        ["¿Qué propiedad de la ciberseguridad garantiza que un usuario no pueda negar haber realizado una acción?", "No repudio", ["Integridad", "Autenticación", "No repudio", "Confidencialidad"]],
+        ["¿Cuál es la diferencia principal entre identificación y autenticación?", "La identificación dice quién eres; la autenticación prueba que eres tú", ["La identificación prueba la identidad; la autenticación determina privilegios", "La identificación solicita un recurso; la autenticación lo entrega", "La identificación dice quién eres; la autenticación prueba que eres tú", "Son dos términos equivalentes en ciberseguridad"]],
+        ["¿Qué define mejor a una vulnerabilidad en ciberseguridad?", "Una debilidad en un sistema que puede ser explotada", ["Un intento deliberado de explotar un sistema", "La consecuencia de un ataque exitoso", "Una debilidad en un sistema que puede ser explotada", "La probabilidad de que ocurra un incidente"]],
+        ["¿Qué representa el “riesgo” en el contexto de la ciberseguridad?", "La combinación entre una amenaza, vulnerabilidad e impacto", ["El valor de un activo comprometido", "El impacto inevitable de una amenaza", "La combinación entre una amenaza, vulnerabilidad e impacto", "La cantidad de datos expuestos en una brecha"]],
+        ["¿Cuál es una diferencia clave entre criptografía simétrica y asimétrica?", "La simétrica utiliza la misma clave para cifrar y descifrar", ["La simétrica usa claves públicas, la asimétrica no usa claves", "La simétrica es más lenta y compleja", "La simétrica utiliza la misma clave para cifrar y descifrar", "La asimétrica no requiere confianza entre las partes"]],
+        ["¿Qué función cumple OpenSSL en un sistema Linux?", "Proporciona herramientas para cifrado y certificados digitales", ["Monitorea procesos en ejecución", "Administra usuarios y contraseñas", "Proporciona herramientas para cifrado y certificados digitales", "Realiza auditorías de red"]],
+        ["¿Qué propósito cumple una función hash en ciberseguridad?", "Verificar integridad de datos mediante un resumen único", ["Proteger datos con cifrado reversible", "Generar claves públicas y privadas", "Verificar integridad de datos mediante un resumen único", "Autenticar usuarios en una red"]],
+        ["¿Qué asegura una firma digital en un documento?", "Autenticidad e integridad del contenido", ["Confidencialidad y anonimato", "Cifrado de extremo a extremo", "Autenticidad e integridad del contenido", "Trazabilidad del archivo"]],
+        ["¿Cuál es la diferencia entre una firma digital y una firma electrónica?", "La firma digital se basa en criptografía; la electrónica puede ser un simple escaneo", ["La firma electrónica es más segura que la digital", "La firma digital siempre requiere un token físico", "La firma digital se basa en criptografía; la electrónica puede ser un simple escaneo", "No hay diferencias legales entre ambas."]],
+        ["¿Qué componente de la infraestructura de clave pública (PKI) emite y valida certificados digitales?", "AC (Autoridad Certificadora)", ["VPN", "AC (Autoridad Certificadora)", "Firewall", "IDS"]],
+        ["¿Cuál de los siguientes modelos de control de acceso otorga permisos según el rol que desempeña un usuario?", "RBAC (Control de Acceso Basado en Roles)", ["DAC (Control de Acceso Discrecional)", "RBAC (Control de Acceso Basado en Roles)", "MAC (Control de Acceso Obligatorio)", "ABAC (Control de Acceso Basado en Atributos)"]],
+        ["¿Qué tecnología permite establecer un canal cifrado entre dos puntos a través de una red pública?", "VPN", ["IDS", "VPN", "Token", "Blockchain"]],
+        ["¿Qué característica distingue a un sistema IDS de uno IPS?", "El IDS detecta y alerta; el IPS detecta y actúa bloqueando", ["El IPS solo registra eventos; el IDS bloquea tráfico", "El IDS actúa de forma preventiva; el IPS es reactivo", "El IDS detecta y alerta; el IPS detecta y actúa bloqueando", "Ambos cumplen funciones idénticas"]]
+    ];
+
+    let respuestasCorrectas = 0;
+    const form = document.getElementById("cuestionario");
+
+    function renderizarCuestionario() {
+      respuestasCorrectas = 0;
+      form.innerHTML = '';
+
+      preguntas.forEach(([pregunta, respuestaCorrecta, opciones], i) => {
+        const preguntaElement = document.createElement('div');
+        preguntaElement.className = 'pregunta';
+        preguntaElement.innerHTML = `
+          <label>${i + 1}. ${pregunta}</label>
+          <div class="opciones">
+            ${opciones.map((opcion, j) => `
+              <label class="opcion">
+                <input type="radio" name="respuesta${i}" value="${opcion}">
+                ${opcion}
+              </label>
+            `).join('')}
+          </div>
+          <div class="botones">
+            <button type="button" class="verificar" onclick="verificarRespuesta(${i}, '${escapeHtml(respuestaCorrecta)}')">
+              Verificar
+            </button>
+          </div>
+          <div class="feedback" id="feedback${i}"></div>
+        `;
+        form.appendChild(preguntaElement);
+      });
+
+      document.getElementById('resultados').style.display = 'none';
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function verificarRespuesta(index, respuestaCorrecta) {
+      const opciones = document.getElementsByName(`respuesta${index}`);
+      let seleccion = "";
+      opciones.forEach((opcion) => {
+        if (opcion.checked) seleccion = opcion.value;
+      });
+
+      const feedback = document.getElementById(`feedback${index}`);
+      if (seleccion === respuestaCorrecta) {
+        feedback.innerHTML = "✓ <span class='correcto'>¡Correcto! Buen trabajo.</span>";
+        feedback.style.display = 'block';
+        respuestasCorrectas++;
+      } else if (seleccion === "") {
+        feedback.innerHTML = "⚠ <span class='incorrecto'>Por favor selecciona una respuesta.</span>";
+        feedback.style.display = 'block';
+        return;
+      } else {
+        feedback.innerHTML = `✗ <span class='incorrecto'>Incorrecto. La respuesta correcta es: ${respuestaCorrecta}</span>`;
+        feedback.style.display = 'block';
+      }
+
+      verificarCompletado();
+    }
+
+    function verificarCompletado() {
+      let todasRespondidas = true;
+      preguntas.forEach((_, i) => {
+        const opciones = document.getElementsByName(`respuesta${i}`);
+        let seleccionada = false;
+        opciones.forEach(opcion => {
+          if (opcion.checked) seleccionada = true;
+        });
+        if (!seleccionada) todasRespondidas = false;
+      });
+
+      if (todasRespondidas) {
+        mostrarResultados();
+      }
+    }
+
+    function mostrarResultados() {
+      const resultados = document.getElementById('resultados');
+      const puntuacion = document.getElementById('puntuacion');
+      const progressBar = document.getElementById('progress-bar');
+
+      const porcentaje = Math.round((respuestasCorrectas / preguntas.length) * 100);
+
+      puntuacion.textContent = `Has acertado ${respuestasCorrectas} de ${preguntas.length} preguntas (${porcentaje}%)`;
+      progressBar.style.width = `${porcentaje}%`;
+
+      if (porcentaje >= 80) {
+        progressBar.style.backgroundColor = '#27ae60';
+      } else if (porcentaje >= 50) {
+        progressBar.style.backgroundColor = '#f39c12';
+      } else {
+        progressBar.style.backgroundColor = '#e74c3c';
+      }
+
+      resultados.style.display = 'block';
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+
+    function reiniciarCuestionario() {
+      renderizarCuestionario();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    renderizarCuestionario();
+  </script>
+</body>
+</html>

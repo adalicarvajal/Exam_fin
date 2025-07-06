@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BDD</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #34db55;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --dark-color: #34495e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 800px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 30px 0;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 10px;
+    }
+
+    .pregunta {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid var(--secondary-color);
+      transition: transform 0.3s ease;
+    }
+
+    .pregunta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .pregunta label {
+      display: block;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+
+    .opciones {
+      margin: 15px 0;
+    }
+
+    .opcion {
+      display: block;
+      margin: 10px 0;
+      padding: 10px 15px;
+      background-color: var(--light-color);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .opcion:hover {
+      background-color: #d6eaf8;
+    }
+
+    .opcion input {
+      margin-right: 10px;
+    }
+
+    .botones {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .verificar {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .verificar:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .reiniciar {
+      background-color: var(--accent-color);
+      color: white;
+      margin-top: 30px;
+    }
+
+    .reiniciar:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .feedback {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 5px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .correcto {
+      background-color: rgba(39, 174, 96, 0.1);
+      color: var(--success-color);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .incorrecto {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: var(--accent-color);
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .resultados {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: var(--light-color);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .progress-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background-color: var(--success-color);
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .volver-menu {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 25px;
+      background-color: var(--dark-color);
+      color: white;
+      border-radius: 5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .volver-menu:hover {
+      background-color: #2c3e50;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 95%;
+        padding: 15px;
+      }
+
+      .pregunta {
+        padding: 15px;
+      }
+
+      button {
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>BDD</h1>
+    <form id="cuestionario"></form>
+
+    <button class="reiniciar" onclick="reiniciarCuestionario()">Reiniciar Cuestionario</button>
+
+    <div class="resultados" id="resultados">
+      <h2>Resultados</h2>
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <p id="puntuacion"></p>
+    </div>
+
+    <!-- Botón de volver al menú principal -->
+    <div class="botones">
+      <a href="../index.html" class="volver-menu">← Volver al Menú Principal</a>
+    </div>
+  </div>
+
+  <script>
+    const preguntas = [
+        ["¿Qué componente de un sistema de bases de datos se encarga de garantizar la atomicidad, consistencia, aislamiento y durabilidad de las transacciones?", "Sistema de gestión de transacciones", ["Procesador de consultas", "Sistema de gestión de transacciones", "Motor de almacenamiento", "Interfaz de usuario"]],
+        ["¿Qué componente en una arquitectura de base de datos asegura la consistencia de los datos en un entorno distribuido?", "Protocolo de commit en dos fases (2PC)", ["Índices secundarios", "Protocolo de commit en dos fases (2PC)", "Tablas particionadas", "Caché de resultados"]],
+        ["¿Qué rol tiene la responsabilidad principal de gestionar los permisos y accesos a los datos en un entorno de base de datos?", "Administrador de seguridad", ["Administrador de seguridad", "Diseñador de base de datos", "Usuario sofisticado", "Administrador de datos"]],
+        ["¿Qué estrategia se utiliza para minimizar la pérdida de datos al realizar copias de seguridad de una base de datos activa sin detener su funcionamiento?", "Backup en caliente", ["Backup en frío", "Backup diferencial", "Backup lógico", "Backup en caliente"]],
+        ["¿Qué tipo de relación se modela cuando una entidad puede estar asociada con múltiples instancias de otra entidad, pero no viceversa?", "Relación uno a muchos (1:N)", ["Relación uno a uno (1:1)", "Relación muchos a muchos (M:N)", "Relación uno a muchos (1:N)", "Relación autorreferencial"]],
+        ["¿Cuál es la operación de Join que devuelve todos los registros de las tablas involucradas, combinando las filas que coinciden y rellenando con valores nulos cuando no hay coincidencias?", "Outer Join", ["Inner Join", "Cross Join", "Natural Join", "Outer Join"]],
+        ["En el modelo EER, ¿Qué principio garantiza que una instancia de una subclase debe pertenecer siempre a su superclase?", "Condición de participación", ["Totalidad", "Restricción de herencia", "Restricción de pertenencia", "Condición de participación"]],
+        ["En el diseño lógico estándar de bases de datos, ¿Cuál es el propósito principal de la normalización?", "Eliminar redundancias y asegurar la consistencia de los datos", ["Reducir la cantidad de datos almacenados", "Eliminar redundancias y asegurar la consistencia de los datos", "Mejorar el rendimiento de consultas complejas", "Garantizar la integridad referencial entre tablas"]],
+        ["¿Qué tipo de organización de archivos en bases de datos permite acceder rápidamente a los registros mediante claves de búsqueda?", "Organización indexada", ["Organización secuencial", "Organización hash", "Organización particionada", "Organización indexada"]],
+        ["¿Cuál de las siguientes características distingue a las API basadas en ORM (Object-Relational Mapping) en comparación con las consultas SQL directas?", "Generación automática de objetos basados en tablas de la base de datos", ["Mayor control sobre las operaciones de bajo nivel", "Generación automática de objetos basados en tablas de la base de datos", "Optimización automática de todas las consultas", "Requieren menor consumo de memoria"]],
+        ["En SQL, ¿Cómo se define un índice único para evitar valores duplicados en una columna específica?", "CREATE UNIQUE INDEX idx_name ON table_name (column_name);", ["CREATE INDEX idx_name ON table_name (column_name);", "ALTER TABLE table_name ADD INDEX (column_name);", "CREATE UNIQUE INDEX idx_name ON table_name (column_name);", "CREATE HASHED INDEX idx_name ON table_name (column_name);"]],
+        ["¿Qué sucede si se intenta eliminar un registro en SQL que está referenciado por otra tabla con una restricción de clave externa y sin configuraciones adicionales?", "La eliminación será bloqueada debido a la restricción de integridad referencial", ["El registro será eliminado automáticamente junto con las referencias", "Solo se eliminará el registro en la tabla referenciada", "Se producirá un error, pero los registros referenciados seguirán existiendo", "La eliminación será bloqueada debido a la restricción de integridad referencial"]],
+        ["¿Qué concepto describe la práctica de otorgar a los usuarios únicamente los permisos mínimos necesarios para realizar sus funciones?", "Principio de privilegio mínimo", ["Escalamiento de privilegios", "Principio de privilegio mínimo", "Acceso discrecional", "Gestión de claves"]],
+        ["¿Cómo puede influir el diseño de índices en el rendimiento de una consulta SQL que utiliza una cláusula JOIN?", "El uso de índices en columnas utilizadas en el JOIN reduce la necesidad de ordenamientos adicionales", ["Los índices mejoran únicamente las consultas que no utilizan JOIN", "Los índices siempre ralentizan las consultas con JOIN debido al costo de mantenimiento", "El diseño de índices no afecta el rendimiento de las consultas con JOIN", "El uso de índices en columnas utilizadas en el JOIN reduce la necesidad de ordenamientos adicionales"]],
+        ["¿Qué función tiene el lenguaje XQuery en el manejo de datos XML?", "Permite realizar consultas estructuradas y transformaciones sobre documentos XML", ["Define cómo se deben validar los datos en un documento XML", "Sirve únicamente para extraer datos específicos de documentos JSON", "Permite realizar consultas estructuradas y transformaciones sobre documentos XML", "Convierte documentos XML en bases de datos relacionales automáticamente"]],
+        ["¿Qué es una base de datos multidimensional?", "Una base de datos diseñada para operaciones OLAP y análisis de datos organizados en múltiples dimensiones.", ["Una base de datos que utiliza índices para almacenar información textual.", "Una base de datos diseñada para operaciones OLAP y análisis de datos organizados en múltiples dimensiones.", "Un sistema de almacenamiento basado en tablas relacionales únicamente.", "Una base de datos que almacena datos en formato JSON exclusivamente."]],
+        ["¿Cuál es el propósito principal de las bases de datos multidimensionales?", "Facilitar el análisis de datos mediante consultas rápidas en entornos OLAP.", ["Reemplazar las bases de datos relacionales en sistemas transaccionales.", "Almacenar grandes volúmenes de datos sin estructura.", "Facilitar el análisis de datos mediante consultas rápidas en entornos OLAP.", "Gestionar flujos de datos en tiempo real."]],
+        ["¿Cómo se organiza la información en una base de datos multidimensional?", "En cubos de datos que permiten vistas desde múltiples perspectivas.", ["En tablas con filas y columnas tradicionales.", "En gráficos dirigidos y nodos jerárquicos.", "En cubos de datos que permiten vistas desde múltiples perspectivas.", "En estructuras planas lineales sin jerarquías."]],
+        ["¿Qué es el particionamiento en bases de datos?", "La división de una base de datos en segmentos más pequeños y manejables.", ["La creación de índices secundarios para optimizar las consultas.", "La división de una base de datos en segmentos más pequeños y manejables.", "La replicación de datos en múltiples servidores para mejorar la disponibilidad.", "La eliminación de datos duplicados en una base de datos."]],
+        ["¿Qué tipo de particionamiento se basa en un rango específico de valores en una columna?", "Particionamiento por rango.", ["Particionamiento por rango.", "Particionamiento por hash.", "Particionamiento por lista.", "Particionamiento híbrido."]],
+        ["¿Cuál es una desventaja potencial de la fragmentación?", "Puede requerir esfuerzos adicionales para garantizar la consistencia de datos.", ["Dificulta la creación de vistas materializadas.", "Incrementa los tiempos de acceso para todas las consultas.", "Puede requerir esfuerzos adicionales para garantizar la consistencia de datos.", "Aumenta los costos de almacenamiento debido a datos duplicados."]],
+        ["¿Qué tipo de replicación permite que todos los nodos puedan leer y escribir datos?", "Replicación maestra-maestra.", ["Replicación maestra-maestra.", "Replicación maestra-esclava.", "Replicación por fragmentación.", "Replicación unidireccional."]],
+        ["¿Cuál es una característica clave de la replicación en bases de datos no relacionales como MongoDB?", "Uso de réplicas en un conjunto de réplicas (replica set) para garantizar alta disponibilidad.", ["Soporte para transacciones ACID estrictas.", "Uso de réplicas en un conjunto de réplicas (replica set) para garantizar alta disponibilidad.", "Uso de tablas normalizadas para optimizar el almacenamiento.", "Dependencia de índices compuestos para la replicación."]],
+        ["¿Cuál es una ventaja de la replicación sincrónica?", "Garantiza que todos los nodos tengan los datos más actualizados en todo momento.", ["Mejora la velocidad de las escrituras al no esperar confirmación de los nodos.", "Garantiza que todos los nodos tengan los datos más actualizados en todo momento.", "Simplifica el proceso de recuperación ante fallos.", "No requiere conexión constante entre los nodos."]],
+        ["¿Qué tipo de replicación se utiliza en sistemas distribuidos donde los datos se dividen en fragmentos?", "Replicación por sharded replication.", ["Replicación sincrónica.", "Replicación por sharded replication.", "Replicación en espejo.", "Replicación maestra-maestra."]],
+        ["¿Cuál de las siguientes opciones indica las etapas del proceso de experimentación en Ingeniería de Software en el orden adecuado?", "Definición del alcance, Planificación, Operación, Análisis e interpretación, Presentación y difusión.", ["Definición del alcance, Planificación, Operación, Análisis e interpretación, Presentación y difusión.", "Definición del objeto, Planteamiento, Operacionalización, Arreglo e interpelación, Prestación y discreción.", "Planificación, Definición del alcance, Operación, Análisis e interpretación, Presentación y difusión.", "Presentación y alcance, Planificación, Operación, Análisis e interpretación, y Definición de la difusión."]],
+        ["¿Cuál de las siguientes opciones corresponde a la definición de una encuesta?", "Es un sistema integral de recopilación de información para describir, comparar o explicar conocimientos, actitudes y comportamientos.", ["Es el instrumento (el cuestionario o la lista de verificación) para recopilar información.", "Es un sistema integral de recopilación de información para describir, comparar o explicar conocimientos, actitudes y comportamientos.", "Estudio que se le realiza a un grupo de personas, estas no representan a una población más amplia.", "Es una conversación dirigida, con un propósito específico y que usa un formato de preguntas y respuestas."]],
+        ["¿Cuál de las siguientes opciones corresponde a las características de los estudios de control en el diseño de encuestas?", "En este tipo de diseño, las comparaciones entre grupos se basan en datos recopilados en otras encuestas anteriores.", ["Reúnen a los participantes y los asignan a grupos experimentales en el mismo momento. Los participantes se asignan a los grupos experimentales al azar.", "En este tipo de diseño, las comparaciones entre grupos se basan en datos recopilados en otras encuestas anteriores.", "Estos estudios se basan en medidas previas y posteriores al tratamiento, como estudios longitudinales.", "Son estudios en los que se solicita información a los participantes antes y después de alguna intervención."]],
+        ["¿Cuál de las siguientes opciones representa un ejemplo de variable dependiente en experimentos de Ingeniería de Software?", "La satisfacción del usuario.", ["El sistema operativo de los servidores.", "El número de desarrolladores en el equipo.", "La satisfacción del usuario.", "El lenguaje de programación utilizado."]],
+        ["¿Qué afirmación es cierta respecto a los cuasiexperimentos en Ingeniería de Software?", "Permiten estudiar el efecto de intervenciones en situaciones reales.", ["Requieren asignación aleatoria de los participantes a los grupos de control y experimental.", "No permiten la inferencia de relaciones causales.", "Permiten estudiar el efecto de intervenciones en situaciones reales.", "Generalmente conducen a resultados menos fiables que los estudios observacionales."]],
+        ["¿Cuál de las siguientes opciones describe una razón para realizar un experimento en Ingeniería de Software?", "Evaluar la efectividad de diferentes metodologías de desarrollo.", ["Validar y verificar el código fuente.", "Evaluar la efectividad de diferentes metodologías de desarrollo.", "Inhibir la interacción del usuario con el software.", "Determinar las preferencias de color en la interfaz de usuario."]],
+        ["¿Cuál de los siguientes elementos es fundamental en una revisión sistemática de la literatura?", "Analizar y sintetizar toda la información relevante.", ["Revisar una cantidad representativa de artículos.", "Usar términos de búsqueda vagos para abarcar más temas.", "Interpretar solo los artículos que confirman la hipótesis.", "Analizar y sintetizar toda la información relevante."]],
+        ["¿Qué es una hipótesis en el contexto de la investigación en Ingeniería de Software?", "Una declaración comprobable que busca explicar un fenómeno.", ["Una suposición arbitraria sin evidencia previa.", "Una declaración comprobable que busca explicar un fenómeno.", "Un resultado esperado basado en una prueba estadística.", "Una teoría general que no requiere validación."]],
+        ["¿Qué elemento es esencial al definir un experimento en Ingeniería de Software?", "Definición clara de variables independientes y dependientes.", ["Selección de herramientas avanzadas.", "Definición clara de variables independientes y dependientes.", "Recolección aleatoria de datos previos.", "Uso exclusivo de participantes expertos."]],
+        ["¿Cuál es el objetivo principal de una investigación exploratoria en Ingeniería de Software?", "Formular nuevas preguntas y conceptos.", ["Probar hipótesis específicas.", "Formular nuevas preguntas y conceptos.", "Comparar dos metodologías establecidas.", "Evaluar el impacto de una intervención."]],
+        ["¿Cuál de las siguientes afirmaciones corresponde al propósito de un diseño factorial en experimentación?", "Evaluar las interacciones entre múltiples variables.", ["Analizar los efectos de una sola variable independiente.", "Evaluar las interacciones entre múltiples variables.", "Reducir el tiempo de experimentación mediante simplificación.", "Permitir una selección más amplia de sujetos de prueba."]],
+        ["¿Cuál es la principal razón para realizar revisiones sistemáticas en Ingeniería de Software?", "Identificar lagunas en el conocimiento actual.", ["Identificar lagunas en el conocimiento actual.", "Comparar herramientas de desarrollo existentes.", "Probar una hipótesis específica.", "Validar datos observacionales."]],
+        ["¿Cuál de las siguientes técnicas es clave para evitar sesgos en un experimento?", "Aleatorizar la asignación de tratamientos.", ["Utilizar participantes expertos.", "Aleatorizar la asignación de tratamientos.", "Reducir el tamaño de la muestra.", "Limitar el tiempo de recolección de datos."]],
+        ["¿Qué tipo de datos se recopila más comúnmente en estudios cualitativos?", "Respuestas abiertas y observaciones.", ["Resultados numéricos.", "Respuestas abiertas y observaciones.", "Estadísticas de desempeño.", "Datos de sensores automáticos."]],
+        ["¿Cuál es un beneficio clave de los estudios de caso en Ingeniería de Software?", "Proveen un análisis detallado de situaciones específicas.", ["Generalizan resultados para toda la industria.", "Proveen un análisis detallado de situaciones específicas.", "Requieren menos tiempo que otros métodos.", "Eliminan la necesidad de datos cuantitativos."]],
+        ["Su objetivo principal es determinar el alcance de la investigación sobre un tema de investigación específico y clasificar información, mas no de profundizar la información técnica.", "Estudio de mapeo sistemático (SMS)", ["Revisión sistemática de literatura (_SLR_)", "Estudio de mapeo sistemático (SMS)", "Revisión Sistemática de los Sistemas (SRS)", "Revisión Sistemática de Mapas(RSM)"]],
+        ["En lugar del apellido ¿Qué se coloca en el caso que sea un autor corporativo?", "Nombre de la organización", ["Nombre de la organización", "“Anónimo”", "Nombre del Representante de la Empresa", "sf."]],
+        ["¿Qué se utiliza en la cita de parafraseo o no literal?", "Las ideas de autor con sus propias palabras", ["La moraleja del texto", "Los datos del autor", "Las ideas de autor con sus propias palabras", "Se cita todo el texto en comillas \" ..\""]],
+        ["¿Qué escoge un autor o escritor en la lista de referencias?", "Aquellas citas o fuentes que utilizo en su trabajo se las agrega como referencias.", ["Aquellas citas o fuentes que utilizo en su trabajo se las agrega como referencias.", "Fundamentos de la lectura.", "Únicamente aquellas citas o fuentes más relevantes.", "No se agregan las citas, únicamente las referencias al final del documento."]],
+        ["¿Cuál es la última versión de las normas APA?", "Séptima edición", ["Segunda edición", "Quinta edición", "Sexta edición", "Séptima edición"]],
+        ["El proceso de la investigación comienza con ....", "planteando un problema al que se busca respuesta", ["recopilando trabajos relacionados", "planteando un problema al que se busca respuesta", "determinando el alcance de la investigación", "definiendo los objetivos"]],
+        ["El conocimiento científico posee tres características, una de ellas es:", "No debe ser subjetivo", ["Tener ciencia", "Tener conocimiento", "Ser científico", "No debe ser subjetivo"]],
+        ["Las partes principales de un artículo científico son(descritos en el orden respectivo):", "Resumen, introducción, metodología o desarrollo, resultados, conclusiones", ["Metodología, desarrollo, resultados, conclusiones, recomendaciones", "Resumen, introducción, figuras, resultados, bibliografía", "Resumen, introducción, metodología o desarrollo, resultados, conclusiones", "Índice, resumen, palabras claves, resultados, conclusiones"]],
+        ["¿Qué significa APA?", "Asociación Americana de Psicología", ["Asociación Americana de Psicología", "Asociación Pedagógica Americana", "Asociación de Papers Americanos", "Asociación de Presentadores y Autores"]],
+        ["La Cita: Tuttle, L. J., & Wright, S. D. ; es una cita que se usa para _____", "El idioma inglés", ["El idioma español", "El idioma inglés", "Ningún Idioma", "En todos los idiomas se utiliza la misma cita"]],
+        ["Su característica esencial es que se lleva a cabo en el lugar de ocurrencia del fenómeno.", "Investigación de campo", ["Investigación aplicada", "Investigación teórica", "Investigación analítica", "Investigación de campo"]],
+        ["Investigación que responde a las consecuencias prácticas que tiene la investigación básica.", "Investigación aplicada", ["Investigación aplicada", "Investigación teórica", "Investigación analítica", "Investigación de campo"]],
+        ["La escritura _______ implica hacer un juicio sobre la calidad de algo", "Escritura crítica", ["Escritura Descriptiva", "Escritura crítica", "Escritura comparativa", "Escritura Reflexiva"]],
+        ["La escritura _______ proporciona información introductoria y de fondo/contextual información contextual", "Escritura Descriptiva", ["Escritura Descriptiva", "Escritura crítica", "Escritura comparativa", "Escritura Reflexiva"]],
+        ["Al armar una cadena de búsqueda, el Operador OR indica", "Que los resultados se ampliaran", ["Que los resultados se ampliaran", "Que los resultados disminuirán", "Es un operador que no cambia el numérico resultante", "Los resultados se dividirán acorde al número de OR que se encuentren"]]
+
+
+
+
+    ];
+
+    let respuestasCorrectas = 0;
+    const form = document.getElementById("cuestionario");
+
+    function renderizarCuestionario() {
+      respuestasCorrectas = 0;
+      form.innerHTML = '';
+
+      preguntas.forEach(([pregunta, respuestaCorrecta, opciones], i) => {
+        const preguntaElement = document.createElement('div');
+        preguntaElement.className = 'pregunta';
+        preguntaElement.innerHTML = `
+          <label>${i + 1}. ${pregunta}</label>
+          <div class="opciones">
+            ${opciones.map((opcion, j) => `
+              <label class="opcion">
+                <input type="radio" name="respuesta${i}" value="${opcion}">
+                ${opcion}
+              </label>
+            `).join('')}
+          </div>
+          <div class="botones">
+            <button type="button" class="verificar" onclick="verificarRespuesta(${i}, '${escapeHtml(respuestaCorrecta)}')">
+              Verificar
+            </button>
+          </div>
+          <div class="feedback" id="feedback${i}"></div>
+        `;
+        form.appendChild(preguntaElement);
+      });
+
+      document.getElementById('resultados').style.display = 'none';
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function verificarRespuesta(index, respuestaCorrecta) {
+      const opciones = document.getElementsByName(`respuesta${index}`);
+      let seleccion = "";
+      opciones.forEach((opcion) => {
+        if (opcion.checked) seleccion = opcion.value;
+      });
+
+      const feedback = document.getElementById(`feedback${index}`);
+      if (seleccion === respuestaCorrecta) {
+        feedback.innerHTML = "✓ <span class='correcto'>¡Correcto! Buen trabajo.</span>";
+        feedback.style.display = 'block';
+        respuestasCorrectas++;
+      } else if (seleccion === "") {
+        feedback.innerHTML = "⚠ <span class='incorrecto'>Por favor selecciona una respuesta.</span>";
+        feedback.style.display = 'block';
+        return;
+      } else {
+        feedback.innerHTML = `✗ <span class='incorrecto'>Incorrecto. La respuesta correcta es: ${respuestaCorrecta}</span>`;
+        feedback.style.display = 'block';
+      }
+
+      verificarCompletado();
+    }
+
+    function verificarCompletado() {
+      let todasRespondidas = true;
+      preguntas.forEach((_, i) => {
+        const opciones = document.getElementsByName(`respuesta${i}`);
+        let seleccionada = false;
+        opciones.forEach(opcion => {
+          if (opcion.checked) seleccionada = true;
+        });
+        if (!seleccionada) todasRespondidas = false;
+      });
+
+      if (todasRespondidas) {
+        mostrarResultados();
+      }
+    }
+
+    function mostrarResultados() {
+      const resultados = document.getElementById('resultados');
+      const puntuacion = document.getElementById('puntuacion');
+      const progressBar = document.getElementById('progress-bar');
+
+      const porcentaje = Math.round((respuestasCorrectas / preguntas.length) * 100);
+
+      puntuacion.textContent = `Has acertado ${respuestasCorrectas} de ${preguntas.length} preguntas (${porcentaje}%)`;
+      progressBar.style.width = `${porcentaje}%`;
+
+      if (porcentaje >= 80) {
+        progressBar.style.backgroundColor = '#27ae60';
+      } else if (porcentaje >= 50) {
+        progressBar.style.backgroundColor = '#f39c12';
+      } else {
+        progressBar.style.backgroundColor = '#e74c3c';
+      }
+
+      resultados.style.display = 'block';
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+
+    function reiniciarCuestionario() {
+      renderizarCuestionario();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    renderizarCuestionario();
+  </script>
+</body>
+</html>
