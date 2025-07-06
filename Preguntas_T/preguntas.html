@@ -10,54 +10,80 @@
       --secondary-color: #34db55;
       --accent-color: #e74c3c;
       --light-color: #ecf0f1;
+      --dark-color: #34495e;
+      --bg-color: #ffffff;
+      --text-color: #333333;
+      --content-bg: #ffffff;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --feedback-bg: rgba(255, 255, 255, 0.9);
+      --opcion-hover: #d6eaf8;
       --success-color: #27ae60;
       --warning-color: #f39c12;
-      --dark-color: #34495e;
+    }
+
+    .dark-mode {
+      --primary-color: #81c784;
+      --secondary-color: #2e7d32;
+      --accent-color: #ef5350;
+      --light-color: #424242;
+      --dark-color: #bdbdbd;
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --content-bg: #1e1e1e;
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      --feedback-bg: rgba(30, 30, 30, 0.9);
+      --opcion-hover: #4a5e3a;
+      --success-color: #388e3c;
+      --warning-color: #f57c00;
     }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--light-color);
+      background-color: var(--bg-color);
+      color: var(--text-color);
       margin: 0;
       padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .container {
       width: 90%;
       max-width: 800px;
-      background-color: white;
+      background-color: var(--content-bg);
       border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px var(--shadow-color);
       padding: 30px;
       margin: 30px 0;
+      transition: background-color 0.3s, box-shadow 0.3s;
     }
 
-    h1 {
+    h1, h2 {
       color: var(--primary-color);
       text-align: center;
       margin-bottom: 30px;
-      font-size: 2.2rem;
+      font-size: clamp(1.8rem, 4vw, 2.2rem);
       border-bottom: 2px solid var(--secondary-color);
       padding-bottom: 10px;
+      transition: color 0.3s;
     }
 
     .pregunta {
-      background-color: white;
+      background-color: var(--content-bg);
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 25px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 8px var(--shadow-color);
       border-left: 4px solid var(--secondary-color);
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s, background-color 0.3s;
     }
 
     .pregunta:hover {
       transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px var(--shadow-color);
     }
 
     .pregunta label {
@@ -65,8 +91,9 @@
       font-weight: 600;
       color: var(--primary-color);
       margin-bottom: 15px;
-      font-size: 1.1rem;
+      font-size: clamp(1rem, 2vw, 1.1rem);
       line-height: 1.4;
+      transition: color 0.3s;
     }
 
     .opciones {
@@ -81,10 +108,11 @@
       border-radius: 5px;
       cursor: pointer;
       transition: all 0.2s ease;
+      color: var(--text-color);
     }
 
     .opcion:hover {
-      background-color: #d6eaf8;
+      background-color: var(--opcion-hover);
     }
 
     .opcion input {
@@ -115,7 +143,7 @@
     }
 
     .verificar:hover {
-      background-color: #2980b9;
+      background-color: var(--primary-color);
       transform: translateY(-2px);
     }
 
@@ -136,16 +164,15 @@
       border-radius: 5px;
       font-weight: 600;
       display: none;
+      background-color: var(--feedback-bg);
     }
 
     .correcto {
-      background-color: rgba(39, 174, 96, 0.1);
       color: var(--success-color);
       border-left: 4px solid var(--success-color);
     }
 
     .incorrecto {
-      background-color: rgba(231, 76, 60, 0.1);
       color: var(--accent-color);
       border-left: 4px solid var(--accent-color);
     }
@@ -157,11 +184,12 @@
       background-color: var(--light-color);
       border-radius: 8px;
       display: none;
+      color: var(--text-color);
     }
 
     .progress-container {
       width: 100%;
-      background-color: #e0e0e0;
+      background-color: var(--dark-color);
       border-radius: 5px;
       margin: 20px 0;
     }
@@ -171,7 +199,7 @@
       background-color: var(--success-color);
       border-radius: 5px;
       width: 0%;
-      transition: width 0.5s ease;
+      transition: width 0.5s ease, background-color 0.3s;
     }
 
     .volver-menu {
@@ -187,22 +215,77 @@
     }
 
     .volver-menu:hover {
-      background-color: #2c3e50;
+      background-color: var(--primary-color);
       transform: translateY(-2px);
     }
 
-    @media (max-width: 600px) {
+    .theme-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 5px var(--shadow-color);
+      font-size: 1.2em;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: background-color 0.3s;
+    }
+
+    .theme-toggle:hover {
+      background-color: var(--primary-color);
+    }
+
+    @media (max-width: 768px) {
       .container {
         width: 95%;
-        padding: 15px;
+        padding: 20px;
       }
 
       .pregunta {
         padding: 15px;
       }
 
-      button {
+      button, .volver-menu {
         padding: 10px 20px;
+      }
+
+      .botones {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px;
+        margin: 15px 0;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+      }
+
+      .pregunta {
+        padding: 12px;
+        margin-bottom: 20px;
+      }
+
+      .opcion {
+        padding: 8px 12px;
+      }
+
+      .feedback {
+        padding: 10px;
       }
     }
   </style>
@@ -222,13 +305,51 @@
       <p id="puntuacion"></p>
     </div>
 
-    <!-- Botón de volver al menú principal -->
     <div class="botones">
       <a href="../index.html" class="volver-menu">← Volver al Menú Principal</a>
     </div>
   </div>
 
+  <button class="theme-toggle" id="themeToggle">🌓</button>
+
   <script>
+    // Función para cambiar entre modo claro y oscuro
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    
+    // Verificar preferencia del usuario
+    const userPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const currentTheme = localStorage.getItem('theme');
+    
+    // Aplicar tema guardado o preferencia del sistema
+    if (currentTheme === 'dark' || (!currentTheme && userPrefersDark)) {
+      body.classList.add('dark-mode');
+      themeToggle.textContent = '☀️';
+    } else {
+      themeToggle.textContent = '🌙';
+    }
+    
+    // Alternar tema al hacer clic
+    themeToggle.addEventListener('click', () => {
+      body.classList.toggle('dark-mode');
+      
+      // Guardar preferencia
+      const isDark = body.classList.contains('dark-mode');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      
+      // Cambiar icono
+      themeToggle.textContent = isDark ? '☀️' : '🌙';
+    });
+    
+    // Escuchar cambios en la preferencia del sistema
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      const newColorScheme = e.matches ? 'dark' : 'light';
+      if (!localStorage.getItem('theme')) {
+        body.classList.toggle('dark-mode', newColorScheme === 'dark');
+        themeToggle.textContent = newColorScheme === 'dark' ? '☀️' : '🌙';
+      }
+    });
+
     const preguntas = [
         ["Tomando como referencia el siguiente ejemplo: “Cuando una aplicación añade una caja de dialogo con un mensaje de «Confirmar envío de los datos» antes de que el usuario pase a la etapa siguiente.”, es un ejemplo de principio de usabilidad:", "Prevención de errores", ["Prevención de errores", "Reconocimiento en vez de recuerdo", "Diseño minimalista y estético", "Visibilidad del estado del sistema"]],
         ["Una aplicación de software utiliza botones diseñados con iconos fácilmente reconocibles, es una característica de principio de usabilidad:", "Reconocimiento en vez de recuerdo", ["Prevención de errores", "Reconocimiento en vez de recuerdo", "Diseño minimalista y estético", "Visibilidad del estado del sistema"]],
@@ -426,8 +547,8 @@
           <div class="opciones">
             ${opciones.map((opcion, j) => `
               <label class="opcion">
-                <input type="radio" name="respuesta${i}" value="${opcion}">
-                ${opcion}
+                <input type="radio" name="respuesta${i}" value="${escapeHtml(opcion)}">
+                ${escapeHtml(opcion)}
               </label>
             `).join('')}
           </div>
@@ -504,11 +625,11 @@
       progressBar.style.width = `${porcentaje}%`;
 
       if (porcentaje >= 80) {
-        progressBar.style.backgroundColor = '#27ae60';
+        progressBar.style.backgroundColor = 'var(--success-color)';
       } else if (porcentaje >= 50) {
-        progressBar.style.backgroundColor = '#f39c12';
+        progressBar.style.backgroundColor = 'var(--warning-color)';
       } else {
-        progressBar.style.backgroundColor = '#e74c3c';
+        progressBar.style.backgroundColor = 'var(--accent-color)';
       }
 
       resultados.style.display = 'block';
@@ -524,6 +645,12 @@
         top: 0,
         behavior: 'smooth'
       });
+    }
+
+    // Cargar el tema guardado
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      document.getElementById('themeToggle').textContent = '☀️';
     }
 
     renderizarCuestionario();
